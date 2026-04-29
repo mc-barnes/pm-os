@@ -1,0 +1,238 @@
+{
+  "resourceType": "Bundle",
+  "id": "8d0e9cc5-b85d-47a6-8edb-f0175dc47666",
+  "type": "collection",
+  "timestamp": "2026-04-29T05:02:09Z",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:9500bfd2-74f2-4796-929e-c081ea2e3731",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "pat-neo-001",
+        "identifier": [
+          {
+            "system": "urn:oid:1.2.36.146.595.217.0.1",
+            "value": "PAT-SPO2-001"
+          }
+        ],
+        "name": [
+          {
+            "family": "Doe",
+            "given": [
+              "Baby"
+            ]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "2026-01-10",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-birthTime",
+            "valueDateTime": "2026-01-10T14:30:00Z"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:9718a074-bb5b-4825-bb16-46fd9f5a197a",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-ga-001",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "76516-4",
+              "display": "Gestational age in weeks"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/pat-neo-001"
+        },
+        "effectiveDateTime": "2026-01-15T08:30:00Z",
+        "valueQuantity": {
+          "value": 28.0,
+          "unit": "wk",
+          "system": "http://unitsofmeasure.org",
+          "code": "wk"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:4366eb16-6224-4847-a5a2-bf6756f31a9d",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-spo2-001",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-pulse-oximetry"
+          ]
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "59408-5",
+              "display": "Oxygen saturation in Arterial blood by Pulse oximetry"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/pat-neo-001"
+        },
+        "effectiveDateTime": "2026-01-15T08:30:00Z",
+        "valueQuantity": {
+          "value": 91.0,
+          "unit": "%",
+          "system": "http://unitsofmeasure.org",
+          "code": "%"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "LL",
+                "display": "Critical low"
+              }
+            ]
+          }
+        ],
+        "referenceRange": [
+          {
+            "low": {
+              "value": 85.0,
+              "unit": "%"
+            },
+            "high": {
+              "value": 95.0,
+              "unit": "%"
+            },
+            "text": "GA-adjusted range for extremely preterm (24-28 wk)"
+          }
+        ],
+        "device": {
+          "reference": "Device/dev-pulseox-001"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:482bb1db-6143-4a5c-a9a5-8f21451b79b6",
+      "resource": {
+        "resourceType": "Device",
+        "id": "dev-pulseox-001",
+        "identifier": [
+          {
+            "system": "urn:oid:1.2.840.10004.1.1.1.0.0.1.0.0.1.2680",
+            "value": "DEV-MASIMO-001"
+          }
+        ],
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "706767009",
+              "display": "Pulse oximeter"
+            }
+          ]
+        },
+        "manufacturer": "Masimo",
+        "modelNumber": "Rad-97",
+        "serialNumber": "SN-RAD97-20260115"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:b8f88485-34e4-42f2-ade4-8a09ac92d0a5",
+      "resource": {
+        "resourceType": "DeviceMetric",
+        "id": "metric-spo2-001",
+        "type": {
+          "coding": [
+            {
+              "system": "urn:iso:std:iso:11073:10101",
+              "code": "150456",
+              "display": "SpO2"
+            }
+          ]
+        },
+        "source": {
+          "reference": "Device/dev-pulseox-001"
+        },
+        "category": "measurement",
+        "calibration": [
+          {
+            "type": "two-point",
+            "state": "calibrated",
+            "time": "2026-01-15T06:00:00Z"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:a4acf7d0-337c-4007-98b0-a55269a09e41",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "report-spo2-001",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "59408-5",
+              "display": "Oxygen saturation in Arterial blood by Pulse oximetry"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/pat-neo-001"
+        },
+        "effectiveDateTime": "2026-01-15T08:30:00Z",
+        "result": [
+          {
+            "reference": "Observation/obs-ga-001"
+          },
+          {
+            "reference": "Observation/obs-spo2-001"
+          }
+        ],
+        "conclusion": "SpO2 91.0% -- classified as URGENT for 28-week GA infant. Below GA-adjusted threshold of 85%. Recommend clinical review.",
+        "conclusionCode": [
+          {
+            "coding": [
+              {
+                "system": "urn:local:triage",
+                "code": "urgent",
+                "display": "Urgent triage"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

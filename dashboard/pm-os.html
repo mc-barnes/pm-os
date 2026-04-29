@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PM OS</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg2: #f7f6f3;
+    --bg3: #f0efe9;
+    --border: rgba(0,0,0,0.1);
+    --border2: rgba(0,0,0,0.18);
+    --text: #1a1a18;
+    --text2: #555550;
+    --text3: #888880;
+    --accent: #1a7a5a;
+    --accent-bg: #e8f5ef;
+    --red: #c0392b;
+    --red-bg: #fdf0ee;
+    --blue: #1a5fa0;
+    --blue-bg: #e8f0fb;
+    --amber: #8a5c0a;
+    --amber-bg: #fdf4e3;
+    --purple: #5040a0;
+    --purple-bg: #efedfe;
+    --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a18;
+      --bg2: #222220;
+      --bg3: #2a2a28;
+      --border: rgba(255,255,255,0.1);
+      --border2: rgba(255,255,255,0.18);
+      --text: #ededea;
+      --text2: #a0a09a;
+      --text3: #686860;
+      --accent: #2db87a;
+      --accent-bg: #0d2a1e;
+      --red: #e05a4a;
+      --red-bg: #2a1512;
+      --blue: #5090e0;
+      --blue-bg: #0d1e30;
+      --amber: #d4a050;
+      --amber-bg: #2a1e08;
+      --purple: #9080e0;
+      --purple-bg: #1a1640;
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* TOP BAR */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    height: 44px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .topbar-logo {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+
+  .topbar-logo .ver {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    font-weight: 400;
+  }
+
+  .topbar-search {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text3);
+    cursor: pointer;
+    min-width: 180px;
+  }
+
+  .topbar-search input {
+    background: none;
+    border: none;
+    outline: none;
+    font-size: 12px;
+    color: var(--text);
+    font-family: var(--sans);
+    width: 100%;
+  }
+
+  .topbar-search input::placeholder { color: var(--text3); }
+
+  /* SHELL */
+  .shell {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    height: calc(100vh - 44px);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 200px;
+    flex-shrink: 0;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 12px 0;
+  }
+
+  .nav-section { margin-bottom: 4px; }
+
+  .nav-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 8px 14px 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: var(--text2);
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    border-radius: 0;
+    transition: background 0.1s, color 0.1s;
+    position: relative;
+  }
+
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+
+  .nav-item.active {
+    background: var(--bg);
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 4px;
+    bottom: 4px;
+    width: 2px;
+    background: var(--accent);
+    border-radius: 0 2px 2px 0;
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* CONTENT */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 32px;
+    max-width: 900px;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .page-title {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .page-sub {
+    font-size: 13px;
+    color: var(--text2);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+
+  /* SECTION LABELS */
+  .sec {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 10px;
+    margin-top: 24px;
+  }
+
+  .sec:first-child { margin-top: 0; }
+
+  /* CARDS */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .card-body {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  /* GRIDS */
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+
+  /* STAT CARDS */
+  .stat {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .stat .n {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .stat .l {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 4px;
+  }
+
+  /* BADGES */
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
+  }
+
+  .b-green  { background: var(--accent-bg); color: var(--accent); }
+  .b-red    { background: var(--red-bg);    color: var(--red); }
+  .b-blue   { background: var(--blue-bg);   color: var(--blue); }
+  .b-amber  { background: var(--amber-bg);  color: var(--amber); }
+  .b-purple { background: var(--purple-bg); color: var(--purple); }
+  .b-gray   { background: var(--bg3); color: var(--text2); }
+
+  /* ROWS */
+  .row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .row:last-child { border-bottom: none; }
+  .row-title { font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .row-desc { font-size: 12px; color: var(--text2); line-height: 1.4; }
+
+  /* STEPS */
+  .step {
+    display: flex;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .step:last-child { border-bottom: none; }
+
+  .step-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--border2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text2);
+    flex-shrink: 0;
+    margin-top: 1px;
+    background: var(--bg2);
+  }
+
+  /* KV TABLE */
+  .kv { width: 100%; font-size: 12px; border-collapse: collapse; }
+  .kv td { padding: 7px 0; vertical-align: top; border-bottom: 1px solid var(--border); }
+  .kv tr:last-child td { border-bottom: none; }
+  .kv td:first-child { color: var(--text2); width: 40%; padding-right: 12px; }
+  .kv td:last-child { color: var(--text); }
+
+  /* CODE BLOCK */
+  .code {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 12px 14px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--text);
+    line-height: 1.7;
+    margin: 10px 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  /* CHECKLIST */
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .check-item:last-child { border-bottom: none; }
+  .check-item.done .check-label { opacity: 0.5; text-decoration: line-through; }
+
+  .check-box {
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--border2);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: transparent;
+    background: var(--bg);
+    transition: all 0.1s;
+  }
+
+  .check-item.done .check-box {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  /* INLINE COMMAND */
+  .cmd {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    padding: 1px 6px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  /* CALLOUT */
+  .callout {
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px;
+    background: var(--accent-bg);
+    border-radius: 0 7px 7px 0;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.6;
+    margin: 12px 0;
+  }
+
+  .callout.warn { border-left-color: var(--red); background: var(--red-bg); }
+  .callout.info { border-left-color: var(--blue); background: var(--blue-bg); }
+
+  /* PILL ROW */
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+  .pill {
+    font-size: 11px;
+    padding: 3px 9px;
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    color: var(--text2);
+    background: var(--bg);
+  }
+
+  /* SKILL CARD */
+  .skill-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+
+  .skill-card:hover { border-color: var(--accent); }
+
+  .skill-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    margin-bottom: 5px;
+  }
+
+  .skill-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .skill-trigger {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    background: var(--accent-bg);
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-bottom: 6px;
+  }
+
+  .skill-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+  /* FORMULA */
+  .formula {
+    background: var(--bg3);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.8;
+    margin: 10px 0;
+  }
+
+  .formula .comment { color: var(--text3); }
+
+  /* COMPANY ROW */
+  .co-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .co-row:last-child { border-bottom: none; }
+  .co-name { font-weight: 600; color: var(--text); }
+  .co-meta { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .co-tc { font-weight: 600; color: var(--accent); font-size: 13px; }
+
+  /* SEARCH HIGHLIGHT */
+  mark { background: #fff099; color: #000; border-radius: 2px; }
+  @media (prefers-color-scheme: dark) {
+    mark { background: #7a6a00; color: #fff; }
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  @media (max-width: 700px) {
+    .sidebar { width: 160px; }
+    .content { padding: 20px 16px; }
+    .g2, .g3, .g4 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">
+    PM OS <span class="ver">v2026.1</span>
+  </div>
+  <div class="topbar-search">
+    <span style="font-size:12px;color:var(--text3)">⌘K</span>
+    <input type="text" id="search-input" placeholder="Search frameworks, skills, companies..." oninput="runSearch(this.value)">
+  </div>
+  <div style="font-size:11px;color:var(--text3);font-family:var(--mono)">open pm-os.html</div>
+</div>
+
+<div class="shell">
+  <div class="sidebar">
+    <div class="nav-section">
+      <span class="nav-label">Core</span>
+      <button class="nav-item active" onclick="show('dashboard',this)"><span class="dot" style="background:#2db87a"></span>Dashboard</button>
+      <button class="nav-item" onclick="show('tools',this)"><span class="dot" style="background:#5090e0"></span>AI Tool Stack</button>
+      <button class="nav-item" onclick="show('agents',this)"><span class="dot" style="background:#9080e0"></span>Agents</button>
+      <button class="nav-item" onclick="show('context',this)"><span class="dot" style="background:#d4a050"></span>Context Eng.</button>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Strategy</span>
+      <button class="nav-item" onclick="show('strategy',this)"><span class="dot" style="background:#d4537e"></span>AI Strategy</button>
+      <button class="nav-item" onclick="show('evals',this)"><span class="dot" style="background:#639922"></span>Evals</button>
+      <button class="nav-item" onclick="show('roadmap',this)"><span class="dot" style="background:#d85a30"></span>Roadmap</button>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Skills</span>
+      <button class="nav-item" onclick="show('skills',this)"><span class="dot" style="background:#2db87a"></span>New Skills (5)</button>
+      <button class="nav-item" onclick="show('setup',this)"><span class="dot" style="background:#888880"></span>First Session</button>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Career</span>
+      <button class="nav-item" onclick="show('interview',this)"><span class="dot" style="background:#e24b4a"></span>Interviews</button>
+      <button class="nav-item" onclick="show('taste',this)"><span class="dot" style="background:#888880"></span>Taste &amp; Speed</button>
+    </div>
+  </div>
+
+  <div class="content" id="content-area">
+
+    <!-- DASHBOARD -->
+    <div id="p-dashboard" class="panel active">
+      <div class="page-title">PM Operating System</div>
+      <div class="page-sub">Your command center for AI product management. Open this file any time: <span class="cmd">open pm-os.html</span></div>
+
+      <div class="g4">
+        <div class="stat"><div class="n">41</div><div class="l">Total skills</div></div>
+        <div class="stat"><div class="n">7</div><div class="l">Sub-agents</div></div>
+        <div class="stat"><div class="n">5</div><div class="l">New this update</div></div>
+        <div class="stat"><div class="n">6</div><div class="l">Context layers</div></div>
+      </div>
+
+      <div class="sec">Quick References</div>
+      <div class="card">
+        <div class="row"><div><div class="row-title">AI-CUPS-PDM</div><div class="row-desc">AI product sense case framework</div></div><span class="badge b-blue">Case</span></div>
+        <div class="row"><div><div class="row-title">STAR+M</div><div class="row-desc">Behavioral interview with Metrics layer</div></div><span class="badge b-red">Interview</span></div>
+        <div class="row"><div><div class="row-title">CEO Framework</div><div class="row-desc">Capture → Enrich → Orchestrate</div></div><span class="badge b-amber">Context</span></div>
+        <div class="row"><div><div class="row-title">5 Lenses</div><div class="row-desc">Prototype evaluation framework</div></div><span class="badge b-green">Taste</span></div>
+        <div class="row" style="border:none"><div><div class="row-title">Karpathy Loop</div><div class="row-desc">Autoresearch: propose → test → keep/revert</div></div><span class="badge b-purple">Optimize</span></div>
+      </div>
+
+      <div class="sec">Interview Prep Checklist</div>
+      <div class="card" id="checklist-wrap"></div>
+
+      <div class="sec">AI Fluency Rubric</div>
+      <div class="card">
+        <div class="row"><div><div class="row-title">Unacceptable</div><div class="row-desc">Barely uses ChatGPT</div></div></div>
+        <div class="row"><div><div class="row-title">Basic</div><div class="row-desc">AI occasionally for simple tasks</div></div></div>
+        <div class="row"><div><div class="row-title">Proficient</div><div class="row-desc">Copilots + structured prompts regularly</div></div></div>
+        <div class="row"><div><div class="row-title">Advanced</div><div class="row-desc">Agents, context systems, AI prototyping</div></div></div>
+        <div class="row" style="border:none"><div><div class="row-title" style="color:var(--accent)">Transformative ← Target</div><div class="row-desc">Vibe experiments, Claude Code, autoresearch</div></div><span class="badge b-green">Target</span></div>
+      </div>
+
+      <div class="sec">AGI Progression</div>
+      <div class="g3">
+        <div class="card"><span class="badge b-gray">Level 1</span><div class="card-title" style="margin-top:8px">Natural dialogue</div><div class="card-body">Frequent errors, poor reasoning. Too early for high-value use cases.</div></div>
+        <div class="card" style="border-color:var(--accent)"><span class="badge b-green">Level 2 — NOW</span><div class="card-title" style="margin-top:8px">PhD-level reasoning</div><div class="card-body">Sweet spot: analytics, decision support, personalized experiences.</div></div>
+        <div class="card"><span class="badge b-purple">Level 3 — Prep</span><div class="card-title" style="margin-top:8px">Independent agents</div><div class="card-body">Collect proprietary data now. Test human-AI handoffs.</div></div>
+      </div>
+    </div>
+
+    <!-- AI TOOL STACK -->
+    <div id="p-tools" class="panel">
+      <div class="page-title">AI Tool Stack</div>
+      <div class="page-sub">The 7 PM AI skills to master in 2026.</div>
+
+      <div class="g2">
+        <div class="skill-card"><div class="skill-num">Skill 01</div><div class="skill-name">Prompting</div><div class="skill-trigger">/prompt</div><div class="skill-desc">RTF Framework, XML for Claude, Custom Instructions, Prompt Library. Dictation tools for 2× speed.</div><div class="pills"><span class="pill">Absolute Mode</span><span class="pill">Role+Task+Format</span></div></div>
+        <div class="skill-card"><div class="skill-num">Skill 02</div><div class="skill-name">AI Copilots</div><div class="skill-trigger">/copilot</div><div class="skill-desc">Claude Projects (high-context), Cluely (desktop), NotebookLM (sole-context for hallucination-free synthesis).</div><div class="pills"><span class="pill">People folder</span><span class="pill">Hard conversations</span></div></div>
+        <div class="skill-card"><div class="skill-num">Skill 03</div><div class="skill-name">AI Agents</div><div class="skill-trigger">/build-agent</div><div class="skill-desc">Consumer agent mode, no-code builders (Lindy, n8n, Relay), Claude Code for deep product integration.</div><div class="pills"><span class="pill">ReAct loop</span><span class="pill">9-step build</span></div></div>
+        <div class="skill-card"><div class="skill-num">Skill 04</div><div class="skill-name">AI Prototyping</div><div class="skill-trigger">/prototype</div><div class="skill-desc">Magic Patterns, Bolt, Lovable, v0. Prototype at EVERY stage — not just design. Build 5, kill 4.</div><div class="pills"><span class="pill">5 Lenses</span><span class="pill">Spec survivor</span></div></div>
+        <div class="skill-card"><div class="skill-num">Skill 05</div><div class="skill-name">Discovery</div><div class="skill-trigger">/discovery</div><div class="skill-desc">Enterpret, Unwrap, Dovetail for insight. NotebookLM for synthesis. Mom test for interviews.</div><div class="pills"><span class="pill">Past tense only</span><span class="pill">No hypotheticals</span></div></div>
+        <div class="skill-card"><div class="skill-num">Skill 06</div><div class="skill-name">Building AI Features</div><div class="skill-trigger">/ai-feature</div><div class="skill-desc">Context engineering, orchestration, observability (Arize, Braintrust), evals, maintenance.</div><div class="pills"><span class="pill">RAG vs fine-tune</span><span class="pill">LLM judges</span></div></div>
+        <div class="skill-card" style="grid-column:1/-1"><div class="skill-num">Skill 07</div><div class="skill-name">Vibe Experimentation</div><div class="skill-trigger">/vibe-experiment</div><div class="skill-desc">Intersection of vibe coding and A/B testing. Run experiments without engineering. Ghost text story: "What do you want to buy?" → "What are your favorite clothing brands?" = highest-impact experiment in 3 years. That change ships free in a vibe experimentation world.</div><div class="pills"><span class="pill">Chameleon</span><span class="pill">Amplitude</span><span class="pill">Optimizely</span><span class="pill">Anthropic Stack</span></div></div>
+      </div>
+
+      <div class="sec">High-Context vs. Vanilla Claude</div>
+      <div class="g2">
+        <div class="card"><div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:8px">Vanilla Claude</div><div class="card-body">"Subject: Weekly Update — The team has been making solid progress…" (buries status at the bottom, no action required)</div></div>
+        <div class="card" style="border-color:var(--accent)"><div style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:8px">High-Context Claude (with perf review + 1:1 notes)</div><div class="card-body">"Subject: Status - YELLOW (Action Needed)" — leads with status, uses manager's language, presents clear tradeoff options, asks for a decision.</div></div>
+      </div>
+
+      <div class="callout info">Stop using vanilla Claude. Either use high-context Projects or Claude Code with a populated OS. The difference is not subtle.</div>
+    </div>
+
+    <!-- AGENTS -->
+    <div id="p-agents" class="panel">
+      <div class="page-title">AI Agents</div>
+      <div class="page-sub">9-step build process, 8-layer architecture, and when not to build.</div>
+
+      <div class="g2">
+        <div class="card"><div class="card-title" style="color:var(--accent)">Build when the JTBD involves…</div><div class="row"><div><div class="row-title">Complex multi-step workflows</div><div class="row-desc">"Look up in Salesforce, check Zendesk, post in Slack" — things people do by following a checklist.</div></div></div><div class="row" style="border:none"><div><div class="row-title">Interacting with systems via APIs</div><div class="row-desc">Agent as universal remote. Create ticket, assign, prioritize, schedule follow-up.</div></div></div></div>
+        <div class="card"><div class="card-title" style="color:var(--red)">Don't build when…</div><div class="row"><div><div class="row-title">Task is simple and predictable</div><div class="row-desc">A well-designed UI is better.</div></div></div><div class="row"><div><div class="row-title">Cost of error is catastrophic</div><div class="row-desc">Need extreme guardrails + human-in-the-loop.</div></div></div><div class="row" style="border:none"><div><div class="row-title">Can't build the Trust Layer</div><div class="row-desc">No explainability or human escape = not ready to ship.</div></div></div></div>
+      </div>
+
+      <div class="sec">9-Step Build Process</div>
+      <div class="card">
+        <div class="step"><div class="step-num">1</div><div><div class="row-title">Set Purpose and Scope</div><div class="row-desc">Start with JTBD, not technology. Narrower scope = better performance.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div><div class="row-title">Create Clear Input/Output Structure</div><div class="row-desc">Treat agents like functions: structured inputs (JSON), predictable outputs (data objects), clear error states.</div></div></div>
+        <div class="step"><div class="step-num" style="background:var(--accent-bg);color:var(--accent);border-color:var(--accent)">3</div><div><div class="row-title">Write System Instructions</div><div class="row-desc" style="color:var(--accent);font-weight:500">Spend 80% of your time here.</div><div class="row-desc">Role definition, behavioral guidelines, output format, edge case handling.</div></div></div>
+        <div class="step"><div class="step-num">4</div><div><div class="row-title">Enable Reasoning and External Actions</div><div class="row-desc">ReAct: Reason → Act → Observe. Start with simple if/then before complex chains.</div></div></div>
+        <div class="step"><div class="step-num">5</div><div><div class="row-title">Orchestrate Multiple Agents (if needed)</div><div class="row-desc">Most use cases don't need swarms. Research → Analysis → Writing → QA.</div></div></div>
+        <div class="step"><div class="step-num">6</div><div><div class="row-title">Implement Memory and Context</div><div class="row-desc">Conversation history + user context + knowledge retrieval. Start simple.</div></div></div>
+        <div class="step"><div class="step-num">7</div><div><div class="row-title">Integrate Multimedia Capabilities</div><div class="row-desc">Voice, image, document processing — add strategically, not by default.</div></div></div>
+        <div class="step"><div class="step-num">8</div><div><div class="row-title">Format and Deliver Results</div><div class="row-desc">Design outputs for both humans and systems.</div></div></div>
+        <div class="step"><div class="step-num">9</div><div><div class="row-title">Build UI or API</div><div class="row-desc">Best agents feel invisible. They just make things happen.</div></div></div>
+      </div>
+
+      <div class="sec">8-Layer Architecture — Build order: start with layers 4, 5, 7</div>
+      <div class="card">
+        <table class="kv">
+          <tr><td><span class="badge b-gray">1</span> Infrastructure</td><td>Cloud, databases, APIs. Agents make far more API calls than traditional apps.</td></tr>
+          <tr><td><span class="badge b-gray">2</span> Agent Internet</td><td>Identity, state management, inter-agent comms. Mostly DIY today.</td></tr>
+          <tr><td><span class="badge b-blue">3</span> Protocol</td><td>MCP = "USB-C for AI." Bet on standards. Build on MCP, not proprietary solutions.</td></tr>
+          <tr><td><span class="badge b-amber">4 ★</span> Tooling</td><td>RAG, function calling, integrations. 5 rock-solid tools beats 50 flaky ones.</td></tr>
+          <tr><td><span class="badge b-amber">5 ★</span> Cognition</td><td>Planning, decision-making, error handling. Invest heavily in guardrails.</td></tr>
+          <tr><td><span class="badge b-gray">6</span> Memory</td><td>Personal context, preferences, history. Start simple — advanced personalization after PMF.</td></tr>
+          <tr><td><span class="badge b-amber">7 ★</span> Application</td><td>The actual product. Focus on ONE use case and nail it.</td></tr>
+          <tr><td><span class="badge b-red">8</span> Ops/Governance</td><td>Build from day one. Retrofitting governance is enormously expensive.</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- CONTEXT ENGINEERING -->
+    <div id="p-context" class="panel">
+      <div class="page-title">Context Engineering</div>
+      <div class="page-sub">6 layers, CEO framework, and the 4D Canvas for AI feature specs.</div>
+
+      <div class="callout">"Context engineering is the delicate art and science of filling the context window with just the right information for the next step." — Andrej Karpathy. LLMs do not infer context magically.</div>
+
+      <div class="sec">6 Layers of Context</div>
+      <div class="card">
+        <div class="step"><div class="step-num" style="background:var(--amber-bg);color:var(--amber);border-color:var(--amber)">1</div><div><div class="row-title">Intent</div><div class="row-desc">Triple-I: Interpret (explicit → task) · Infer (behavior signals) · Identify Gaps (missing info to retrieve)</div></div></div>
+        <div class="step"><div class="step-num" style="background:var(--blue-bg);color:var(--blue);border-color:var(--blue)">2</div><div><div class="row-title">User</div><div class="row-desc">5-P: Preferences · Patterns · Proficiency · Pacing · Purpose</div></div></div>
+        <div class="step"><div class="step-num" style="background:var(--purple-bg);color:var(--purple);border-color:var(--purple)">3</div><div><div class="row-title">Domain</div><div class="row-desc">5 pillars: Entities · Attributes · Relationships · Definitions/Rules · Lineage</div></div></div>
+        <div class="step"><div class="step-num" style="background:var(--red-bg);color:var(--red);border-color:var(--red)">4</div><div><div class="row-title">Rules</div><div class="row-desc">Soft Wall (advisory: tone, brand) + Hard Wall (mandatory: schemas, permissions, safety)</div></div></div>
+        <div class="step"><div class="step-num" style="background:var(--accent-bg);color:var(--accent);border-color:var(--accent)">5</div><div><div class="row-title">Environment</div><div class="row-desc">N.O.W.: Nearby Activity · Operational Conditions · Window of Time</div></div></div>
+        <div class="step"><div class="step-num" style="background:var(--accent-bg);color:var(--accent);border-color:var(--accent)">6</div><div><div class="row-title">Exposition</div><div class="row-desc">Distillation Loop: Collect → Compress → Construct → Constrain → Check</div></div></div>
+      </div>
+
+      <div class="sec">4D Context Canvas — run this before every AI feature spec</div>
+      <div class="g2">
+        <div class="card"><span class="badge b-amber">D1 — Demand</span><div class="card-title" style="margin-top:8px">What is the model being asked to do?</div><div class="card-body">Specify: Inputs · Assumptions · Required Outputs · Success Criteria. Never leave outputs as "write a good response."</div></div>
+        <div class="card"><span class="badge b-blue">D2 — Data</span><div class="card-title" style="margin-top:8px">What context is required?</div><div class="card-body">For each piece: Source · Availability · Sensitivity · Priority. Run through all 6 layers.</div></div>
+        <div class="card"><span class="badge b-purple">D3 — Discovery</span><div class="card-title" style="margin-top:8px">How will context be obtained at runtime?</div><div class="card-body">Semantic search · Graph traversal · Precomputed. Define latency vs. quality tradeoffs explicitly.</div></div>
+        <div class="card"><span class="badge b-red">D4 — Defense</span><div class="card-title" style="margin-top:8px">How will it fail gracefully?</div><div class="card-body">Pre-checks · Post-checks · Fallback paths · Feedback loops. Design failure states before launch.</div></div>
+      </div>
+
+      <div class="callout warn">What breaks AI systems: "just put everything in the prompt" · relying only on semantic search · assuming prompts enforce rules (they don't) · not maintaining provenance · trusting the model to figure out the structure.</div>
+    </div>
+
+    <!-- STRATEGY -->
+    <div id="p-strategy" class="panel">
+      <div class="page-title">AI Product Strategy</div>
+      <div class="page-sub">8-step framework, 3 principles, and patterns from the 5-layer stack.</div>
+
+      <div class="sec">3 Non-Negotiable Principles</div>
+      <div class="card">
+        <div class="row"><div><div class="row-title">Solve real problems, not AI problems</div><div class="row-desc">"What user problems can we solve better using AI?" — not "How can we add AI?"</div></div></div>
+        <div class="row"><div><div class="row-title">Your data is your moat, not your model</div><div class="row-desc">Foundation models are commodities. Unique data + virtuous loops = competitive advantage.</div></div></div>
+        <div class="row" style="border:none"><div><div class="row-title">Design for human-AI collaboration</div><div class="row-desc">Build fallback paths, transparency, and feedback mechanisms. Augment, don't replace.</div></div></div>
+      </div>
+
+      <div class="sec">8-Step Framework</div>
+      <div class="g2">
+        <div class="card"><span class="badge b-gray">Step 1</span><div class="card-title" style="margin-top:6px">Set Clear Objectives</div><div class="card-body">Find: friction points, pattern-rich problems, data-dense workflows, creative bottlenecks, expertise gaps.</div></div>
+        <div class="card"><span class="badge b-gray">Step 2</span><div class="card-title" style="margin-top:6px">Understand AI Users</div><div class="card-body">Trust thresholds · Collaboration zones · Learning curves · Fallback paths</div></div>
+        <div class="card"><span class="badge b-blue">Step 3</span><div class="card-title" style="margin-top:6px">Identify AI Superpowers</div><div class="card-body">Proprietary datasets, domain knowledge, unique user signals, network effects.</div></div>
+        <div class="card"><span class="badge b-blue">Step 4</span><div class="card-title" style="margin-top:6px">Build Capability Stack</div><div class="card-body">Foundation → Enabling → Application. Build/buy/partner on strategic importance.</div></div>
+        <div class="card"><span class="badge b-purple">Step 5</span><div class="card-title" style="margin-top:6px">Visualize AI Vision</div><div class="card-body">Visiontypes: before/after, collaboration, progressive intelligence, data flywheel.</div></div>
+        <div class="card"><span class="badge b-purple">Step 6</span><div class="card-title" style="margin-top:6px">Define Key Pillars</div><div class="card-body">Quick wins (1-3mo) · Strategic bets (3-12mo) · Option plays (exploratory)</div></div>
+        <div class="card"><span class="badge b-green">Step 7</span><div class="card-title" style="margin-top:6px">Quantify Impact</div><div class="card-body">Account for learning curves, network effects, risk-adjusted outcomes. Impact compounds.</div></div>
+        <div class="card"><span class="badge b-red">Step 8</span><div class="card-title" style="margin-top:6px">Ethical Guardrails</div><div class="card-body">What you won't build · Accuracy thresholds · Bias testing · Transparency standards</div></div>
+      </div>
+
+      <div class="sec">4 Universal Lessons</div>
+      <div class="card">
+        <table class="kv">
+          <tr><td>Data beats model</td><td>Winners have unique data or leverage customer data — not better algorithms.</td></tr>
+          <tr><td>Vertical focus</td><td>Specific domains consistently outperform horizontal approaches.</td></tr>
+          <tr><td>Start narrow</td><td>Highly specific use cases where value is clear. Broaden after success.</td></tr>
+          <tr><td>Human essential</td><td>Best AI products augment humans in collaborative interfaces.</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- EVALS -->
+    <div id="p-evals" class="panel">
+      <div class="page-title">Evals &amp; LLM Judges</div>
+      <div class="page-sub">Systematic measurement of AI output quality. The PM's most underused skill.</div>
+
+      <div class="g2">
+        <div class="stat"><div class="n" style="font-size:15px;font-weight:600">A/B Testing</div><div class="l">Real world performance</div></div>
+        <div class="stat"><div class="n" style="font-size:15px;font-weight:600">Evals</div><div class="l">Predicted performance on known test cases</div></div>
+      </div>
+
+      <div class="sec">3-Step Eval Lifecycle</div>
+      <div class="card">
+        <div class="step"><div class="step-num" style="background:var(--blue-bg);color:var(--blue);border-color:var(--blue)">1</div><div><div class="row-title">Analyze — Surface Failure Modes</div><div class="row-desc">Bootstrap 100 diverse traces → Open coding (read + label each) → Axial coding (cluster into binary failure types) → Label all traces 0/1 per failure mode</div></div></div>
+        <div class="step"><div class="step-num" style="background:var(--accent-bg);color:var(--accent);border-color:var(--accent)">2</div><div><div class="row-title">Measure — Build Automated Evaluators</div><div class="row-desc">Code-based (fast, cheap, deterministic) for objective checks. LLM-as-Judge for subjective nuance. One evaluator per failure mode — never combined.</div></div></div>
+        <div class="step"><div class="step-num" style="background:var(--accent-bg);color:var(--accent);border-color:var(--accent)">3</div><div><div class="row-title">Improve — Fix What You Found</div><div class="row-desc">Refine prompts first → Decompose tasks → Adjust RAG → Improve tool schemas → Add guardrails → Fine-tune (last resort only).</div></div></div>
+      </div>
+
+      <div class="sec">LLM Judge Data Splits</div>
+      <div class="g3">
+        <div class="card"><div class="card-title">10–20% Training</div><div class="card-body">Pool for few-shot demo examples only. Never used for evaluation.</div></div>
+        <div class="card"><div class="card-title">~40% Dev</div><div class="card-body">Iterate and refine judge prompt here. Never include in judge prompt.</div></div>
+        <div class="card"><div class="card-title">~40% Test</div><div class="card-body">Touch only ONCE at the very end. Final unbiased measure.</div></div>
+      </div>
+
+      <div class="sec">Corrected Success Rate Formula</div>
+      <div class="formula">θ̂ = (p_obs + TNR - 1) / (TPR + TNR - 1)
+
+<span class="comment">Example: TPR=0.92, TNR=0.88, obs_pass=0.85
+Corrected = (0.85 + 0.88 - 1) / (0.92 + 0.88 - 1) = 0.73/0.80 = 91.3%
+
+Report 91.3%, not 85%. Raw pass rate is biased by judge imperfection.</span></div>
+
+      <div class="callout warn">Most common mistake: a dashboard packed with "hallucination_score", "helpfulness_score" — these are distractions. Build application-specific evaluators for real failure modes you found in your traces.</div>
+    </div>
+
+    <!-- ROADMAP -->
+    <div id="p-roadmap" class="panel">
+      <div class="page-title">AI Product Roadmap</div>
+      <div class="page-sub">8 types, decision framework, and 5 tenets of winning roadmaps.</div>
+
+      <div class="sec">Quick Decision Framework</div>
+      <div class="card">
+        <table class="kv">
+          <tr><td>Sales / board want dates</td><td><span class="badge b-blue">Timeline-Based</span> — only include validated AI initiatives</td></tr>
+          <tr><td>CEO focused on results</td><td><span class="badge b-green">Goal-Oriented or Outcome-Based</span></td></tr>
+          <tr><td>Users requesting features</td><td><span class="badge b-purple">Feature-Based</span> — all 3 criteria must be true</td></tr>
+          <tr><td>Multiple teams building AI</td><td><span class="badge b-amber">Theme-Based or Portfolio</span></td></tr>
+          <tr><td>Tech landscape changing fast</td><td><span class="badge b-gray">Now, Next, Later</span></td></tr>
+          <tr><td>Regular release schedule</td><td><span class="badge b-gray">Release-Based</span></td></tr>
+          <tr><td>Everyone wants different things</td><td><span class="badge b-red">Hybrid</span> — 3-4 types simultaneously</td></tr>
+        </table>
+      </div>
+
+      <div class="sec">5 Tenets of Winning AI Roadmaps</div>
+      <div class="card">
+        <div class="row" style="border:none;flex-direction:column;gap:8px">
+          <div>1. Start with one AI capability, not ten</div>
+          <div>2. Define success in user behavior terms, not technology terms</div>
+          <div>3. Include "learning milestones," not just "launch milestones"</div>
+          <div>4. Have explicit criteria for killing projects</div>
+          <div>5. Communicate uncertainty honestly</div>
+        </div>
+      </div>
+
+      <div class="callout">"Plans are worthless, but planning is everything." — Eisenhower. The roadmap dies. The learning lives forever.</div>
+    </div>
+
+    <!-- NEW SKILLS -->
+    <div id="p-skills" class="panel">
+      <div class="page-title">New Skills (5)</div>
+      <div class="page-sub">The 5 skills added to fill gaps in the original OS. Drop into <span class="cmd">.claude/skills/</span></div>
+
+      <div class="callout">All 5 files are in your download. Copy them into your PM OS at <span class="cmd">.claude/skills/[skill-name]/SKILL.md</span></div>
+
+      <div class="sec">Skills Added This Update</div>
+
+      <div class="card" style="margin-bottom:12px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px">
+          <div>
+            <div class="skill-trigger">/eval-setup</div>
+            <div class="card-title" style="margin-top:6px">Eval Setup</div>
+          </div>
+          <span class="badge b-green">New</span>
+        </div>
+        <div class="card-body" style="margin-bottom:10px">Full 3-step evaluation lifecycle (Analyze → Measure → Improve). Covers open coding, axial coding, 0/1 trace labeling, and code vs. LLM-as-Judge decision. Triggers on "how do I know if this AI is working."</div>
+        <div class="pills"><span class="pill">3-step lifecycle</span><span class="pill">Open coding</span><span class="pill">Axial coding</span><span class="pill">Code vs LLM-judge</span></div>
+      </div>
+
+      <div class="card" style="margin-bottom:12px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px">
+          <div>
+            <div class="skill-trigger">/llm-judge-build</div>
+            <div class="card-title" style="margin-top:6px">LLM Judge Build</div>
+          </div>
+          <span class="badge b-green">New</span>
+        </div>
+        <div class="card-body" style="margin-bottom:10px">Builds one validated LLM-as-Judge evaluator for a single failure mode. Covers all 4 required prompt components, the alignment loop (TPR/TNR), data splits, and the corrected success rate formula for production dashboards.</div>
+        <div class="pills"><span class="pill">4-component prompt</span><span class="pill">TPR/TNR alignment</span><span class="pill">Corrected rate formula</span><span class="pill">Weekly re-validation</span></div>
+      </div>
+
+      <div class="card" style="margin-bottom:12px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px">
+          <div>
+            <div class="skill-trigger">/skill-optimizer</div>
+            <div class="card-title" style="margin-top:6px">Skill Optimizer (Autoresearch)</div>
+          </div>
+          <span class="badge b-green">New</span>
+        </div>
+        <div class="card-body" style="margin-bottom:10px">Runs the Karpathy autoresearch loop on any skill, prompt, or system prompt. Propose change → test → keep if score improves → revert if not → repeat. 20–100 automated iterations overnight. ~$2–10 per full run. Includes the experiment log pattern so learnings are portable.</div>
+        <div class="pills"><span class="pill">Karpathy loop</span><span class="pill">Git commit/reset</span><span class="pill">Experiment log</span><span class="pill">~$10/100 rounds</span></div>
+      </div>
+
+      <div class="card" style="margin-bottom:12px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px">
+          <div>
+            <div class="skill-trigger">/evaluate-prototype</div>
+            <div class="card-title" style="margin-top:6px">Evaluate Prototype (5 Lenses)</div>
+          </div>
+          <span class="badge b-green">New</span>
+        </div>
+        <div class="card-body" style="margin-bottom:10px">Scores any prototype /25 across Problem-Solution Fit, Interaction Cost, Edge Case Exposure, Technical Debt Signal, and Business Model Alignment. Produces Ship / Iterate / Kill recommendation with override rule: a 1 on Lens 1 or 5 = automatic Kill.</div>
+        <div class="pills"><span class="pill">5 lenses scored 1-5</span><span class="pill">20-25: Ship</span><span class="pill">14-19: Iterate</span><span class="pill">&lt;14: Kill</span></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px">
+          <div>
+            <div class="skill-trigger">/context-audit</div>
+            <div class="card-title" style="margin-top:6px">Context Audit (4D Canvas)</div>
+          </div>
+          <span class="badge b-green">New</span>
+        </div>
+        <div class="card-body" style="margin-bottom:10px">Audits the context design of any AI feature across Demand / Data / Discovery / Defense. Checks all 6 context layers in D2. Produces a structured audit findings doc and a pre-launch checklist of what breaks AI systems.</div>
+        <div class="pills"><span class="pill">4D Canvas</span><span class="pill">6-layer check</span><span class="pill">Pre-launch gate</span><span class="pill">Audit doc output</span></div>
+      </div>
+
+      <div class="sec">Install Instructions</div>
+      <div class="code">pm-os/
+└── .claude/
+    └── skills/
+        ├── eval-setup/        SKILL.md  ← /eval-setup
+        ├── llm-judge-build/   SKILL.md  ← /llm-judge-build
+        ├── skill-optimizer/   SKILL.md  ← /skill-optimizer
+        ├── evaluate-prototype/ SKILL.md ← /evaluate-prototype
+        └── context-audit/     SKILL.md  ← /context-audit</div>
+    </div>
+
+    <!-- FIRST SESSION -->
+    <div id="p-setup" class="panel">
+      <div class="page-title">First Session Setup</div>
+      <div class="page-sub">From zero to a working PM OS in 90 minutes. Do this once, in order.</div>
+
+      <div class="callout">Parts 1 is mandatory. Parts 2–5 are this-week priorities. Don't skip the hard stop after Step 1.</div>
+
+      <div class="sec">Part 1 — The 20-Minute Core</div>
+      <div id="setup-checks"></div>
+
+      <div class="sec">Part 2 — People Folder (this week)</div>
+      <div class="card">
+        <div class="card-title">Create your first 5 people files</div>
+        <div class="card-body" style="margin:6px 0 10px">Start with: manager, engineering lead, design lead, data partner, key stakeholder.</div>
+        <div class="code">knowledge/people/[firstname-lastname].md
+
+# [Full Name] — [Title]
+- Reports to: [Name]
+- Cares about: [2-3 things, specific]
+- Communication style: [how they like information]
+- Decision style: [data / intuition / consensus]
+
+## Recent context
+[What's on their plate. Any tensions.]
+
+## Meeting notes
+### [Date] — [Meeting]
+[Key points. Action items.]</div>
+        <div class="card-body" style="margin-top:8px">After any meeting: "Update the people file for [name] based on today's transcript."</div>
+      </div>
+
+      <div class="sec">Part 3 — First 3 Skills to Know</div>
+      <div class="card">
+        <div class="row"><div><div class="row-title"><span class="cmd">/prd-draft</span></div><div class="row-desc">Feed meeting transcript or research notes → get a PRD in your team's format</div></div></div>
+        <div class="row"><div><div class="row-title"><span class="cmd">/evaluate-prototype</span></div><div class="row-desc">Run 5 Lenses on any prototype before deciding to build</div></div></div>
+        <div class="row" style="border:none"><div><div class="row-title"><span class="cmd">/eval-setup</span></div><div class="row-desc">Set up an evaluation system for any AI feature</div></div></div>
+      </div>
+
+      <div class="sec">Part 4 — Context Status Line</div>
+      <div class="code">Run in Claude Code:
+/status line
+
+🟢 Under 50%  — you're fine
+🟠 50–80%     — be thoughtful about what you add  
+🔴 Over 80%   — new session or delegate to sub-agent
+
+Each MCP server costs 8%+ of context. Disable what you're not using.</div>
+
+      <div class="sec">Part 5 — Monday Morning Briefing</div>
+      <div class="code">Pull my Slack DMs and channels from the last 24 hours. Summarize 
+into three buckets: needs my response, FYI only, blocked items. 
+Check GOALS.md for current priorities. Write a 5-bullet summary 
+I can scan in 2 minutes.</div>
+    </div>
+
+    <!-- INTERVIEWS -->
+    <div id="p-interview" class="panel">
+      <div class="page-title">AI PM Interviews</div>
+      <div class="page-sub">Company-by-company process + behavioral frameworks. 2025 data.</div>
+
+      <div class="sec">Top Companies — Total Comp 2025</div>
+      <div class="card">
+        <div class="co-row"><div><div class="co-name">OpenAI</div><div class="co-meta">8 rounds · &lt;2% pass · 4–6 weeks</div></div><div class="co-tc">$569K</div></div>
+        <div class="co-row"><div><div class="co-name">Google</div><div class="co-meta">8–10 rounds · structured thinking above all · vibe coding round</div></div><div class="co-tc">$557K</div></div>
+        <div class="co-row"><div><div class="co-name">Anthropic</div><div class="co-meta">8 rounds · AI safety round · take-home (NO Claude for it) · 3-8 weeks</div></div><div class="co-tc">$549K</div></div>
+        <div class="co-row"><div><div class="co-name">Netflix</div><div class="co-meta">4–6 rounds · unanimous approval required · Keeper Test</div></div><div class="co-tc">$535K</div></div>
+        <div class="co-row"><div><div class="co-name">Apple</div><div class="co-meta">8–12 rounds · on-device AI focus · most comprehensive</div></div><div class="co-tc">$453K</div></div>
+        <div class="co-row"><div><div class="co-name">Meta</div><div class="co-meta">5 rounds · ML metrics in analytical round · 50% non-technical PMs</div></div><div class="co-tc">$452K</div></div>
+        <div class="co-row"><div><div class="co-name">Amazon</div><div class="co-meta">6–7 rounds · 16 Leadership Principles · Bar Raiser veto · no feedback</div></div><div class="co-tc">$318K</div></div>
+        <div class="co-row"><div><div class="co-name">Nvidia</div><div class="co-meta">8–11 rounds · highest technical bar · GPU/CUDA required · marathon onsite</div></div><div class="co-tc">$303K</div></div>
+        <div class="co-row"><div><div class="co-name">Microsoft</div><div class="co-meta">6–7 rounds · LLM deployment experience required</div></div><div class="co-tc">$287K</div></div>
+        <div class="co-row"><div><div class="co-name">Salesforce</div><div class="co-meta">4–6 rounds · Ohana culture heavy · Einstein/Agentforce knowledge</div></div><div class="co-tc">$286K</div></div>
+      </div>
+
+      <div class="sec">Case Frameworks</div>
+      <div class="card">
+        <div class="row"><div><div class="row-title">AI Product Sense: AI-CUPS-PDM</div><div class="row-desc" style="font-family:var(--mono);font-size:11px">AI Applicability → Clarify → User → Problem → Solutions → Prioritize → Design → Measurement</div></div><span class="badge b-purple">Case</span></div>
+        <div class="row"><div><div class="row-title">AI Execution: AI-MEDMPIA</div><div class="row-desc" style="font-family:var(--mono);font-size:11px">Metric → External → Data → Model → Product changes → Infra → Analyze</div></div><span class="badge b-blue">Case</span></div>
+        <div class="row"><div><div class="row-title">AI Metrics: C-NABGT</div><div class="row-desc" style="font-family:var(--mono);font-size:11px">Clarify → North Star → Breakdown → AI-Specific → Guardrails → Trade-offs</div></div><span class="badge b-green">Case</span></div>
+        <div class="row" style="border:none"><div><div class="row-title">Behavioral: STAR+M</div><div class="row-desc" style="font-family:var(--mono);font-size:11px">Situation → Task → Action → Result + Metrics (precision/recall/F1, latency, cost)</div></div><span class="badge b-red">Behavioral</span></div>
+      </div>
+
+      <div class="sec">5 Behavioral Categories</div>
+      <div class="g2">
+        <div class="card"><span class="badge b-blue">1</span><div class="card-title" style="margin-top:6px">AI Product Experience</div><div class="card-body">Must have shipped production AI. Name models, architectures, eval approaches, baseline comparisons.</div></div>
+        <div class="card"><span class="badge b-blue">2</span><div class="card-title" style="margin-top:6px">Technical AI Knowledge</div><div class="card-body">Speak naturally: precision/recall, F1, RAG vs fine-tuning, model drift, online vs offline eval.</div></div>
+        <div class="card"><span class="badge b-purple">3</span><div class="card-title" style="margin-top:6px">ML Team Collaboration</div><div class="card-body">Understand ML is iterative and uncertain. Know when to defer, when to push back on timelines.</div></div>
+        <div class="card"><span class="badge b-red">4</span><div class="card-title" style="margin-top:6px">Ethics &amp; Safety</div><div class="card-body">Appears in nearly every AI PM interview. Must have encountered real bias/fairness issues.</div></div>
+        <div class="card" style="grid-column:1/-1"><span class="badge b-green">5</span><div class="card-title" style="margin-top:6px">AI Product Strategy</div><div class="card-body">Not an AI hammer looking for nails. Build vs. buy judgment. Point of view on where field is heading.</div></div>
+      </div>
+    </div>
+
+    <!-- TASTE AND SPEED -->
+    <div id="p-taste" class="panel">
+      <div class="page-title">Taste at Speed</div>
+      <div class="page-sub">The new PM skill: evaluate working software fast, kill most of it, ship survivors.</div>
+
+      <div class="callout">When building costs near zero, the bottleneck moves from "can we build it" to "should we ship it." The 80% kill rate is the whole point.</div>
+
+      <div class="g2">
+        <div class="card"><div class="card-title" style="color:var(--text2)">Traditional (8–12 weeks)</div><div class="card-body" style="margin-top:6px;line-height:2">Idea → PRD → Design → Eng builds → QA → Ship</div></div>
+        <div class="card" style="border-color:var(--accent)"><div class="card-title" style="color:var(--accent)">AI-era (1–2 weeks)</div><div class="card-body" style="margin-top:6px;line-height:2">Idea → 5 prototypes → Evaluate → Kill 4 → <strong>Spec the survivor</strong> → Ship</div></div>
+      </div>
+
+      <div class="sec">The 5 Lenses (use /evaluate-prototype to run these)</div>
+      <div class="card">
+        <div class="step"><div class="step-num">1</div><div><div class="row-title">Problem-Solution Fit</div><div class="row-desc">Does this solve the problem we set out to solve, or did it drift? State both in one sentence. Name the gap.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div><div class="row-title">Interaction Cost</div><div class="row-desc">Count clicks to core value. Compare against user's current workflow. One added click = risky. Two or more = needs justification.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div><div class="row-title">Edge Case Exposure</div><div class="row-desc">Empty input · Extreme input · Conflicting state · Wrong user type · Multi-attribute queries. Document every break.</div></div></div>
+        <div class="step"><div class="step-num">4</div><div><div class="row-title">Technical Debt Signal</div><div class="row-desc">Ask engineering: "If we ship this, what breaks in 6 months?" Prototype is disposable vs. IS what we're shipping.</div></div></div>
+        <div class="step"><div class="step-num">5</div><div><div class="row-title">Business Model Alignment</div><div class="row-desc">What specific metric does this move? Quantify the problem and the expected impact in dollars. Delightful ≠ strategic.</div></div></div>
+      </div>
+
+      <div class="sec">Boris Cherny Workflow (Claude Code PM)</div>
+      <div class="card">
+        <table class="kv">
+          <tr><td>Setup</td><td>5 terminal tabs, each a parallel repo checkout. Claude Code in plan mode in each.</td></tr>
+          <tr><td>Process</td><td>Iterate on plan until right → Opus 4.6 one-shots implementation. Starts agents from phone.</td></tr>
+          <tr><td>Volume</td><td>10–30 PRs daily. ~2 bugs/month (vs ~20 by hand). 80% of Anthropic code written by Claude Code.</td></tr>
+          <tr><td>Kill rate</td><td>"Hundreds of versions" before shipping. Terminal spinner: 50–100 iterations, 80% never shipped.</td></tr>
+          <tr><td>Key insight</td><td>Don't build for the model of today. Build for the model 6 months from now.</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- end content-area -->
+</div><!-- end shell -->
+
+<script>
+  function show(id, el) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('p-' + id).classList.add('active');
+    el.classList.add('active');
+    document.getElementById('content-area').scrollTop = 0;
+  }
+
+  // Checklist
+  const checks = [
+    "Prepare 5–7 AI behavioral stories with STAR+M format",
+    "Practice precision/recall/F1 vocabulary naturally in sentences",
+    "Know AI-CUPS-PDM case framework cold",
+    "Research target company's specific AI approach",
+    "Build portfolio with shipped AI examples (not side projects)",
+    "Prepare 'Tell Me About Yourself': Hook → AI Inflection → Proof → Why Here",
+    "Have 'kill an AI project' story ready with metrics",
+  ];
+
+  const cl = document.getElementById('checklist-wrap');
+  if (cl) {
+    checks.forEach((text, i) => {
+      const item = document.createElement('div');
+      item.className = 'check-item';
+      item.innerHTML = `<div class="check-box" id="cb${i}"></div><span class="check-label">${text}</span>`;
+      item.onclick = () => {
+        item.classList.toggle('done');
+        document.getElementById('cb' + i).textContent = item.classList.contains('done') ? '✓' : '';
+      };
+      cl.appendChild(item);
+    });
+  }
+
+  // Setup checklist
+  const setupChecks = [
+    "Fill in CLAUDE.md — replace every [bracket] with real info. Test: 'What are my current priorities?'",
+    "Fill in GOALS.md — company OKRs, team OKRs, personal goals, one success metric",
+    "Install 3 connectors: Slack, Google Drive, GitHub CLI (brew install gh && gh auth login)",
+    "Run /status line to see context usage meter",
+    "Create people files for your top 5 stakeholders in knowledge/people/",
+    "Test /prd-draft, /evaluate-prototype, and /eval-setup this week",
+    "Run Monday morning briefing workflow",
+  ];
+
+  const sc = document.getElementById('setup-checks');
+  if (sc) {
+    setupChecks.forEach((text, i) => {
+      const item = document.createElement('div');
+      item.className = 'check-item';
+      item.innerHTML = `<div class="check-box" id="sc${i}"></div><span class="check-label">${text}</span>`;
+      item.onclick = () => {
+        item.classList.toggle('done');
+        document.getElementById('sc' + i).textContent = item.classList.contains('done') ? '✓' : '';
+      };
+      sc.appendChild(item);
+    });
+  }
+
+  // Search
+  function runSearch(q) {
+    if (!q || q.length < 2) {
+      document.querySelectorAll('mark').forEach(m => {
+        m.outerHTML = m.textContent;
+      });
+      return;
+    }
+    // Find panels with matching text and navigate
+    const panels = document.querySelectorAll('.panel');
+    const term = q.toLowerCase();
+    let found = null;
+    panels.forEach(p => {
+      if (p.textContent.toLowerCase().includes(term) && !found) found = p;
+    });
+    if (found) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      found.classList.add('active');
+      const id = found.id.replace('p-', '');
+      document.querySelectorAll('.nav-item').forEach(n => {
+        if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + id + "'")) {
+          document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+          n.classList.add('active');
+        }
+      });
+    }
+  }
+
+  document.getElementById('search-input').addEventListener('keydown', e => {
+    if (e.key === 'Escape') { e.target.value = ''; }
+  });
+
+  document.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      document.getElementById('search-input').focus();
+    }
+  });
+</script>
+</body>
+</html>
