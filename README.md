@@ -1,8 +1,8 @@
 # SaMD Team OS
 
-An AI-powered operating system for regulated medical device product teams. One repo. Every function checks in work. Any AI agent traverses it. Everyone self-serves.
+A Team OS built for SaMD. One mind across every function. Ship regulated software at startup speed.
 
-SaMD Team OS gives your team a shared structure that Claude Code understands out of the box — with skills that generate regulatory artifacts (IEC 62304, ISO 14971, FDA guidance), templates that encode your QMS workflows, and a navigation layer that keeps AI context usage efficient.
+One repo your whole team works in — product, regulatory, clinical, engineering, and quality. Claude Code navigates the structure, generates regulatory artifacts (IEC 62304, ISO 14971, FDA guidance), and encodes your QMS workflows so nobody re-explains the device.
 
 ## Architecture
 
