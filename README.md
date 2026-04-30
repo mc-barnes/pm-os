@@ -29,7 +29,7 @@ graph TD
     TEAM --> T_NAV["CLAUDE.md<br/><i>Onboarding, retros</i>"]
 
     SKILLS --> S1["14 skills"]
-    SKILLS --> S2["1 agent persona"]
+    SKILLS --> S2["2 agent personas"]
 
     style ROOT fill:#1F4E79,color:#fff
     style SKILLS fill:#2E7D32,color:#fff
@@ -58,11 +58,12 @@ Every folder has a `CLAUDE.md` navigation map. Claude reads the root on every se
 | Change Impact | "change impact", "re-verification scope" | XLSX change impact report |
 | Design Review | "design review", "PDR", "CDR", "FDR" | XLSX + markdown narrative |
 
-### Agent Persona (`.claude/skills/agents/`)
+### Agent Personas (`.claude/skills/agents/`)
 
 | Agent | Use Case |
 |-------|----------|
-| Clinical Reviewer | Neonatal SpO2 domain expert — reviews clinical logic, alarm management, triage accuracy, and nurse handoff quality |
+| Regulatory Reviewer | Senior FDA RA reviewer — catches submission gaps, cites specific guidance/standards, flags what an FDA reviewer would flag |
+| Clinical Reviewer | Domain expert persona — reviews clinical logic, alarm management, triage accuracy, and handoff quality. Ships pre-configured for neonatal SpO2 as an example; replace with your clinical domain. |
 
 ## Folder Structure
 
@@ -89,7 +90,8 @@ pm-os/
 │   ├── change-impact/           # Change impact analysis (XLSX)
 │   ├── design-review/           # PDR/CDR/FDR gate (XLSX + MD)
 │   └── agents/
-│       └── clinical-reviewer/   # Neonatal SpO2 domain expert
+│       ├── regulatory-reviewer/ # FDA SaMD submission reviewer
+│       └── clinical-reviewer/   # Domain expert (example: neonatal SpO2)
 │
 ├── product/                     # PRDs, strategy, competitive, customers
 ├── regulatory/                  # Design controls, risk, submissions, DHF
@@ -98,6 +100,7 @@ pm-os/
 ├── engineering/                 # Bugs, RFCs, IEC 62304 SDLC
 ├── quality/                     # CAPA, complaints, audit prep
 ├── team/                        # Onboarding, retros, decisions
+├── scripts/                     # status.sh → generates STATUS.md from frontmatter
 │
 └── examples/                    # Pre-generated artifacts
     ├── design-controls-example.xlsx
@@ -136,10 +139,18 @@ Skills are auto-discovered by Claude Code from `.claude/skills/`. Just say the t
 
 ### 4. Fill in templates
 
-Each content folder has `_TEMPLATE.md` files. Copy a template, rename it, and fill in the `[brackets]`:
+Each content folder has `_TEMPLATE.md` files with YAML frontmatter pre-configured (`type`, `status: draft`, `owner`). Copy a template, rename it, and fill in the `[brackets]`:
 
 ```bash
 cp product/prds/_TEMPLATE.md product/prds/alarm-management-v2.md
+```
+
+### 5. Check document status
+
+Run the status generator to see what's draft, in-review, approved, or stale:
+
+```bash
+./scripts/status.sh    # generates STATUS.md from frontmatter
 ```
 
 ## Example Artifacts
