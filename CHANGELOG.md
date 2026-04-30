@@ -10,10 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - regulatory-reviewer agent persona (`.claude/skills/agents/regulatory-reviewer/`) — FDA SaMD artifact reviewer with two-tier review model, 9 evaluation dimensions (including cybersecurity), and reference index mapping to 28+ docs
-- cybersecurity-reviewer agent persona (`.claude/skills/agents/cybersecurity-reviewer/`) ��� Medical device cybersecurity specialist covering FDA Premarket Cybersecurity Guidance (2023), Section 524B, AAMI TIR57, IEC 81001-5-1, with 8 evaluation dimensions
+- cybersecurity-reviewer agent persona (`.claude/skills/agents/cybersecurity-reviewer/`) — Medical device cybersecurity specialist covering FDA Premarket Cybersecurity Guidance (June 2025), Section 524B, AAMI TIR57, IEC 81001-5-1:2021, with 8 evaluation dimensions
 - qa-reviewer agent persona (`.claude/skills/agents/qa-reviewer/`) — ISO 13485 QMS compliance reviewer with 8 evaluation dimensions
-- safety-reviewer agent persona (`.claude/skills/agents/safety-reviewer/`) — Patient safety and human factors specialist covering ISO 14971, IEC 62366-1, AI/ML output safety, with 7 evaluation dimensions
-- Cybersecurity section in regulatory-reviewer covering FDA Premarket Cybersecurity Guidance (2023), SBOM, AAMI TIR57, IEC 81001-5-1
+- safety-reviewer agent persona (`.claude/skills/agents/safety-reviewer/`) — Patient safety and human factors specialist covering ISO 14971:2019, IEC 62366-1:2015+A1:2020, AI/ML output safety, with 7 evaluation dimensions
+- Cybersecurity section in regulatory-reviewer covering FDA Premarket Cybersecurity Guidance (June 2025), SBOM, AAMI TIR57, IEC 81001-5-1:2021
 - AI disclaimer on all agent review outputs (regulatory, clinical, QA, safety, cybersecurity)
 - Jurisdiction statement (FDA only) on regulatory-reviewer outputs
 - 3 cybersecurity reference docs in `references/cybersecurity/` (FDA cybersecurity FAQ, 524B select updates, postmarket guidance)
@@ -36,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Mermaid block rendering in README
-- Cybersecurity-reviewer FDA guidance date corrected from 2026 to 2023
+- Cybersecurity-reviewer FDA guidance date corrected to June 2025 (supersedes September 2023 final guidance)
 
 ## [1.0.0] - 2025-04-28
 
