@@ -60,10 +60,12 @@ Every folder has a `CLAUDE.md` navigation map. Claude reads the root on every se
 
 ### Agent Personas (`.claude/skills/agents/`)
 
+Specialist reviewers that operate from a defined clinical or regulatory perspective. Each is a standalone `SKILL.md` — clone the folder, swap the domain knowledge, and you have a new reviewer for your vertical.
+
 | Agent | Domain | Standards & Guidance |
 |-------|--------|---------------------|
 | Regulatory Reviewer | FDA SaMD submissions (510(k), De Novo, PMA). Reviews PRDs, design controls, risk docs, CAPA, PMS reports, change requests, and SOPs. | IEC 62304, ISO 14971, ISO 13485, IEC 62366-1, IMDRF N41, FDA PCCP guidance, 21 CFR 820. Backed by 28 reference docs. |
-| Clinical Reviewer | RPM clinical reviewer with neonatal SpO2 domain expertise. Reviews clinical logic, alarm management, triage accuracy, and handoff quality. Clone and update for any RPM vertical (cardiac, respiratory, CGM, etc.). | Bonafide et al. (SpO2 accuracy), AAP consensus (cardiorespiratory monitoring), Owlet validation studies, NRP guidelines. |
+| Clinical Reviewer | RPM clinical reviewer with neonatal SpO2 domain expertise. Reviews clinical logic, alarm management, triage accuracy, and handoff quality. | Bonafide et al. (SpO2 accuracy), AAP consensus (cardiorespiratory monitoring), Owlet validation studies, NRP guidelines. |
 
 ## Folder Structure
 
