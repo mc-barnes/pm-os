@@ -128,7 +128,7 @@ A query about customers loads `product/CLAUDE.md` and relevant customer files �
 
 ## Project Status
 
-Ready for small-team pilots. Not yet validated for enterprise rollout — and that's intentional. Start with one PM, one product, one sprint. Evaluate agent findings against your RA/QA team's own assessments. If the findings are useful, expand.
+Ready for small-team pilots. Not yet validated for enterprise rollout — and that's intentional. Validation status: 20/20 fixture format pass (dry-run); live agent evaluation pending — see [eval results](docs/eval-results-2026-04-30.md). Start with one PM, one product, one sprint. Evaluate agent findings against your RA/QA team's own assessments. If the findings are useful, expand.
 
 For adoption planning, see [Adoption Guide](docs/adoption-guide.md). For validation details and QMS integration, see [Responsible Use](docs/responsible-use.md). For audit preparation, see [Auditor Briefing](docs/auditor-briefing.md).
 
@@ -143,7 +143,7 @@ Agent reviews use the Claude API. Costs depend on artifact length and number of 
 | Eval run (20 fixtures) | ~$2.00 |
 | Weekly team usage (5 artifacts, panel review) | $5 – $15/month |
 
-Estimates based on current Claude API pricing as of April 2026. For a team of 3-5, expect $10-30/month in typical usage.
+Estimates based on current Claude API pricing as of April 2026. For a team of 3-5, expect $10-30/month in typical usage. Re-eval runs (~$2 each) are triggered by SKILL.md edits, model version changes, or standards updates — typically several runs per quarter.
 
 ## Getting Started
 

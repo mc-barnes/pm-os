@@ -73,6 +73,7 @@ Every markdown document should include YAML frontmatter:
 | strategy | product/strategy/ | Product strategy and vision documents |
 | call-notes | product/customers/*/calls/ | Customer call notes and meeting summaries |
 | data-schema | analytics/post-market/schemas/ | Data schema documentation for surveillance tables |
+| validation | docs/ | Agent evaluation results and validation summaries |
 
 ### Stale-doc handling
 When a document is replaced: set `status: superseded` in the old doc's frontmatter, add `supersedes:` in the new doc pointing to the old path. Claude ignores `status: superseded` docs unless explicitly asked.

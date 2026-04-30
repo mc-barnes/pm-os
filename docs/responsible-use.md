@@ -57,7 +57,7 @@ Draft artifact → Agent review (screening) → Human expert review → eQMS (co
 - **Every agent output includes a disclaimer** stating findings must be validated by qualified professionals
 - **The regulatory-reviewer includes a jurisdiction statement** (FDA scope only)
 - **Panel verdicts use most-conservative-wins logic** — an INCOMPLETE or FAIL from any agent blocks a panel PASS
-- **Agents never generate artifacts** (risk analyses, SBOMs, design controls) — they only review existing ones
+- **Agents (reviewer personas) never generate artifacts** — they only review artifacts produced by skills, by humans, or any combination. Skills generate; agents review.
 - **Final accountability for artifact quality rests with the document owner**, not the agent
 
 ## Validation Approach

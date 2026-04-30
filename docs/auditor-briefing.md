@@ -47,10 +47,10 @@ Agent review is an informal pre-screening step. It is not documented as part of 
 
 - **20 test fixtures** with deliberately planted deficiencies (4 per agent) verify that agents detect known gaps
 - **Automated eval script** scores blocker detection and verdict accuracy
-- **Dry-run validation** confirms all fixtures are well-formed (20/20 pass as of 2026-04-30)
+- **Dry-run validation** confirms all fixtures are well-formed — see [most recent eval results](eval-results-2026-04-30.md) for current status
 - **Fixture methodology**: each fixture documents expected findings and expected verdict; scoring compares agent output against these expectations
 
-Validation evidence is maintained in `docs/eval-results-*.md` and `examples/test-fixtures/`.
+Validation evidence is maintained in `docs/eval-results-*.md` and `examples/test-fixtures/`. Refer to the most recent `eval-results-*.md` file for current validation status rather than relying on dates quoted in this document.
 
 ## Limitations
 
@@ -73,3 +73,6 @@ Validation evidence is maintained in `docs/eval-results-*.md` and `examples/test
 
 **Q: "What happens if the AI gives a wrong finding?"**
 > The same thing that happens with any checklist or screening tool — the human reviewer catches it during formal review. Agent findings are inputs to the review process, not outputs of it. Our process does not permit document approval based on agent review alone.
+
+**Q: "What if the AI flags a real issue and the reviewer dismisses it?"**
+> The human reviewer's documented rationale for accepting or dismissing any finding — whether from an agent, a checklist, or a peer reviewer — becomes part of the review record. If a reviewer dismisses an agent finding, the basis for that decision is captured in the same way any other review comment disposition is recorded per our document control procedures.
