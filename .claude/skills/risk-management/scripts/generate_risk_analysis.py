@@ -8,7 +8,7 @@ Generates an 8-sheet risk analysis workbook:
   3. Risk_Estimation
   4. Risk_Evaluation
   5. Risk_Controls
-  6. Residual_Risk          (with ALARP rationale enforcement)
+  6. Residual_Risk          (with AFAP rationale enforcement)
   7. Overall_Residual_Risk  (ISO 14971 Clause 7)
   8. FMEA
 
@@ -66,7 +66,7 @@ RISK_MATRIX: list[list[str]] = [
 
 ACCEPTABILITY_MAP = {
     "AC": "Acceptable",
-    "A": "ALARP",
+    "A": "AFAP",
     "U": "Unacceptable",
 }
 
@@ -89,7 +89,7 @@ def _spo2_hazards() -> list[dict[str, Any]]:
             "control_type": "Inherent safety by design",
             "verification": "Unit tests with edge-case SpO2 waveforms; clinical validation against expert labels (n>=200)",
             "post_severity": 4, "post_probability": 1,
-            "rationale": "Residual risk is ALARP: dual-threshold with GA adjustment reduces probability to Incredible; further reduction requires fundamentally different sensor technology which is impracticable",
+            "rationale": "Residual risk is AFAP: dual-threshold with GA adjustment reduces probability to Incredible; further reduction requires fundamentally different sensor technology which is impracticable",
             "fm": "Classification algorithm outputs 'normal' for SpO2 < 85%",
             "effect": "No alarm triggered for urgent desaturation",
             "cause": "Model undertrained on preterm-specific waveforms",
@@ -107,7 +107,7 @@ def _spo2_hazards() -> list[dict[str, Any]]:
             "control_type": "Protective measure",
             "verification": "ROC analysis on artifact vs. real desat test set; expert review queue audit (monthly)",
             "post_severity": 3, "post_probability": 2,
-            "rationale": "Residual risk is ALARP: confidence scoring routes uncertain cases to expert review; residual probability is Improbable",
+            "rationale": "Residual risk is AFAP: confidence scoring routes uncertain cases to expert review; residual probability is Improbable",
             "fm": "Artifact filter rejects waveform segments with SpO2 < 88%",
             "effect": "Desaturation event not recorded or alarmed",
             "cause": "Artifact filter threshold too aggressive for low-signal conditions",
@@ -200,7 +200,7 @@ def _risk_level_formula(sev_cell: str, prob_cell: str) -> str:
     Build a nested-IF Excel formula that looks up the 5x5 risk matrix.
 
     Given a severity cell (e.g. B2) containing 1-5 and a probability cell
-    (e.g. C2) containing 1-5, returns "Acceptable", "ALARP", or
+    (e.g. C2) containing 1-5, returns "Acceptable", "AFAP", or
     "Unacceptable".
     """
     # Build the formula row by row. Each row checks severity, then
@@ -367,7 +367,7 @@ def _build_risk_estimation(wb: Workbook, hazards: list[dict[str, Any]]) -> None:
     )
     ws.conditional_formatting.add(
         risk_range,
-        CellIsRule(operator="equal", formula=['"ALARP"'], fill=YELLOW_FILL),
+        CellIsRule(operator="equal", formula=['"AFAP"'], fill=YELLOW_FILL),
     )
     ws.conditional_formatting.add(
         risk_range,
@@ -391,7 +391,7 @@ def _build_risk_evaluation(wb: Workbook, hazards: list[dict[str, Any]]) -> None:
         cell_c = ws.cell(row=i, column=3, value=f"=Risk_Estimation!D{i}")
         cell_c.alignment = CELL_ALIGNMENT
         cell_c.border = THIN_BORDER
-        # Rationale -- only populated for ALARP/Unacceptable in example
+        # Rationale -- only populated for AFAP/Unacceptable in example
         _style_cell(ws, i, 4, h.get("rationale", ""))
 
     # Conditional formatting on Acceptability (column C)
@@ -402,7 +402,7 @@ def _build_risk_evaluation(wb: Workbook, hazards: list[dict[str, Any]]) -> None:
     )
     ws.conditional_formatting.add(
         acc_range,
-        CellIsRule(operator="equal", formula=['"ALARP"'], fill=YELLOW_FILL),
+        CellIsRule(operator="equal", formula=['"AFAP"'], fill=YELLOW_FILL),
     )
     ws.conditional_formatting.add(
         acc_range,
@@ -475,23 +475,23 @@ def _build_residual_risk(wb: Workbook, hazards: list[dict[str, Any]]) -> None:
     )
     ws.conditional_formatting.add(
         risk_range,
-        CellIsRule(operator="equal", formula=['"ALARP"'], fill=YELLOW_FILL),
+        CellIsRule(operator="equal", formula=['"AFAP"'], fill=YELLOW_FILL),
     )
     ws.conditional_formatting.add(
         risk_range,
         CellIsRule(operator="equal", formula=['"Acceptable"'], fill=GREEN_FILL),
     )
 
-    # ALARP rationale enforcement: red fill when risk is ALARP but rationale is empty.
+    # AFAP rationale enforcement: red fill when risk is AFAP but rationale is empty.
     # NOTE: openpyxl FormulaRule uses relative references anchored to the top-left
     # cell of the applied range.  When the range is F2:F{n}, the formula
-    # AND(E2="ALARP",F2="") auto-shifts per row (E3/F3 for row 3, etc.).
+    # AND(E2="AFAP",F2="") auto-shifts per row (E3/F3 for row 3, etc.).
     # This is intentional — do NOT use absolute ($E$2) references here.
     rationale_range = f"F2:F{len(hazards) + 1}"
     ws.conditional_formatting.add(
         rationale_range,
         FormulaRule(
-            formula=[f'AND(E2="ALARP",F2="")'],
+            formula=[f'AND(E2="AFAP",F2="")'],
             fill=RED_FILL,
         ),
     )
@@ -533,7 +533,7 @@ def _build_overall_residual_risk(wb: Workbook) -> None:
             "Acceptable",
             "Benefits of automated SpO2 triage (reduced alarm fatigue, faster clinical response, "
             "GA-adjusted thresholds) outweigh residual risks. All unacceptable risks reduced to "
-            "ALARP or Acceptable. No unacceptable residual risks remain.",
+            "AFAP or Acceptable. No unacceptable residual risks remain.",
         ),
         (
             "Post-Market Monitoring Plan",

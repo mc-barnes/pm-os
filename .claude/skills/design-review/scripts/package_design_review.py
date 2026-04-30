@@ -225,7 +225,7 @@ SPO2_REQUIREMENTS = {
 SPO2_RISK = {
     "total_hazards": 5,
     "unacceptable": 0,
-    "alarp": 2,
+    "afap": 2,
     "acceptable": 3,
     "open_controls": 0,
 }
@@ -303,7 +303,7 @@ def read_risk_analysis(path: str) -> dict:
     result = {
         "total_hazards": 0,
         "unacceptable": 0,
-        "alarp": 0,
+        "afap": 0,
         "acceptable": 0,
         "open_controls": 0,
     }
@@ -321,8 +321,8 @@ def read_risk_analysis(path: str) -> dict:
                 risk_level = str(r[-1]).strip().lower() if r[-1] else ""
                 if "unacceptable" in risk_level:
                     result["unacceptable"] += 1
-                elif "alarp" in risk_level:
-                    result["alarp"] += 1
+                elif "afap" in risk_level:
+                    result["afap"] += 1
                 else:
                     result["acceptable"] += 1
             break
@@ -618,7 +618,7 @@ def build_risk_status(wb: Workbook, risk_data: dict):
     rows = [
         ("Total Hazards Identified", risk_data["total_hazards"]),
         ("Unacceptable Remaining", risk_data["unacceptable"]),
-        ("ALARP (with rationale)", risk_data["alarp"]),
+        ("AFAP (with rationale)", risk_data["afap"]),
         ("Acceptable", risk_data["acceptable"]),
         ("Open Risk Controls", risk_data["open_controls"]),
     ]
@@ -756,7 +756,7 @@ The {device_name} is presented for {REVIEW_TYPE_MAP[review_type].split(' -- ')[1
 ## Key Findings
 
 1. **Requirements**: {req_data['total_user_needs']} user needs have corresponding design inputs. {pct_verified:.0f}% verification complete. {pct_validated:.0f}% validation complete{f" ({req_data['open_detail']})" if req_data.get('open_detail') else ""}.
-2. **Risk Management**: All {risk_data['total_hazards']} identified hazards have risk controls. {risk_data['unacceptable']} unacceptable residual risks. {risk_data['alarp']} ALARP with documented rationale.
+2. **Risk Management**: All {risk_data['total_hazards']} identified hazards have risk controls. {risk_data['unacceptable']} unacceptable residual risks. {risk_data['afap']} AFAP with documented rationale.
 3. **Traceability**: {"Full forward/backward traceability established (UN->DI->DO->VER->VAL)." if pct_verified >= 90 else "Traceability matrix has gaps requiring attention."}
 4. **Open Items**: {_summarize_open_items(req_data, risk_data, not_provided, checklist_items)}
 
@@ -786,7 +786,7 @@ The {device_name} is presented for {REVIEW_TYPE_MAP[review_type].split(' -- ')[1
 |--------|-------|
 | Total Hazards | {risk_data['total_hazards']} |
 | Unacceptable Remaining | {risk_data['unacceptable']} |
-| ALARP (with rationale) | {risk_data['alarp']} |
+| AFAP (with rationale) | {risk_data['afap']} |
 | Acceptable | {risk_data['acceptable']} |
 | Open Risk Controls | {risk_data['open_controls']} |
 
@@ -941,7 +941,7 @@ def main():
         risk_data = {
             "total_hazards": 0,
             "unacceptable": 0,
-            "alarp": 0,
+            "afap": 0,
             "acceptable": 0,
             "open_controls": 0,
         }

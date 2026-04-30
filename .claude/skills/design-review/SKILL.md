@@ -1,5 +1,6 @@
 ---
 name: design-review
+version: 1.0.0
 description: >
   Package design review gate documentation (PDR/CDR/FDR) as XLSX + markdown
   narrative. Generates artifact checklists, requirements status, risk status,
@@ -98,7 +99,7 @@ The workbook contains 6 sheets:
 |--------|-------------|
 | Total Hazards | Count of identified hazards |
 | Unacceptable Remaining | Hazards still above acceptable threshold |
-| ALARP | Hazards reduced as low as reasonably practicable |
+| AFAP | Hazards reduced as far as possible |
 | Acceptable | Hazards at acceptable risk level |
 | Open Risk Controls | Controls not yet implemented/verified |
 
