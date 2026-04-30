@@ -1,8 +1,83 @@
 # SaMD Team OS
 
-A Team OS built for SaMD. One mind across every function. Ship regulated software at startup speed.
+For teams shipping regulated software without a 30-person QMS organization. Five reviewer agents catch findings before auditors do. Standards editions pinned (IEC 62304:2006+A1:2015, ISO 14971:2019, IEC 81001-5-1:2021). Outputs are explicit drafts — your eQMS remains the system of record.
 
-One repo your whole team works in — product, regulatory, clinical, engineering, and quality. Claude Code navigates the structure, generates regulatory artifacts (IEC 62304, ISO 14971, FDA guidance), and encodes your QMS workflows so nobody re-explains the device.
+*Ship regulated software at startup speed.*
+
+## Scope and Limitations
+
+Skill-generated XLSX, JSON, and Markdown files are **uncontrolled drafts** — no audit trail, no electronic signatures, no Part 11 / Annex 11 compliance. Final approved records belong in your eQMS of record (e.g., Greenlight Guru, MasterControl, Qualio). This repo is a **working environment**, not a quality system.
+
+## What's Included
+
+### Reviewer Agents (`.claude/skills/agents/`)
+
+Five specialist reviewers that operate from a defined regulatory or clinical perspective. Each is a standalone `SKILL.md` — clone the folder, swap the domain knowledge, and you have a new reviewer for your vertical.
+
+| Agent | Reviews | Standards | Verdicts |
+|-------|---------|-----------|----------|
+| Regulatory Reviewer | PRDs, design controls, risk docs, submissions, change requests | IEC 62304:2006+A1:2015, ISO 14971:2019, ISO 13485:2016, IEC 62366-1:2015+A1:2020, FDA guidance | ACCEPTABLE / NEEDS REVISION / NOT SUBMITTABLE |
+| QA Reviewer | CAPA records, complaint files, audit findings, supplier evaluations, management reviews | ISO 13485:2016, 21 CFR 820, ISO 19011:2018 | AUDIT-READY / NEEDS REMEDIATION / NOT AUDIT-READY |
+| Safety Reviewer | Risk analysis, FMEA, use-related risk, usability files, AI/ML output safety | ISO 14971:2019, IEC 62366-1:2015+A1:2020, FDA Human Factors guidance | ACCEPTABLE / NEEDS REVISION / SAFETY CONCERN |
+| Cybersecurity Reviewer | Threat models, SBOMs, security architecture, pen test reports, vulnerability management | FDA Premarket Cybersecurity Guidance (2025), Section 524B, AAMI TIR57:2016, IEC 81001-5-1:2021 | ACCEPTABLE / NEEDS REVISION / SECURITY CONCERN |
+| Clinical Reviewer | Clinical logic, alarm management, triage accuracy, handoff quality | Published neonatal literature, AAP guidelines, NRP protocols | ACCEPTABLE / NEEDS REVISION / CLINICALLY UNSAFE |
+
+#### What the agents actually catch
+
+**Regulatory Reviewer** — BLOCKER:
+> Intended use statement does not specify patient population, clinical condition, or use setting. Per 21 CFR 807.92(a)(5), indications for use must define population, anatomy, and clinical condition. Predicate selection cannot be validated as written. → *NOT SUBMITTABLE*
+
+**Cybersecurity Reviewer** — SECURITY FINDING:
+> SBOM lists 47 components with no version numbers. Section 524B(b)(3) requires versions for vulnerability tracking. Without versions, CVE monitoring is impossible — Log4Shell demonstrated the criticality of transitive dependency tracking. → *SECURITY CONCERN*
+
+**QA Reviewer** — OBSERVATION:
+> Management review minutes record "Reviewed and acknowledged" for all agenda items but no decisions. ISO 13485:2016 §5.6.3 requires actionable output — resource allocation, improvement actions, QMS changes. Five of fourteen required §5.6.2 inputs are missing. → *NEEDS REMEDIATION*
+
+**Safety Reviewer** — GAP:
+> Risk controls jump directly to IFU warnings without documenting why inherent safety and protective measures are infeasible. ISO 14971:2019 §7.1 requires the hierarchy — inherent safety first, then protective measures, then information for safety — with departures justified. → *NEEDS REVISION*
+
+**Clinical Reviewer** — Note:
+> Alarm threshold documentation references "standard neonatal ranges" without citing the specific reference population. Pinning to published cohort data (e.g., Castillo et al. 2008 for preterm, Dawson et al. 2010 for transitional SpO2) strengthens the clinical justification during FDA review. → *ACCEPTABLE with note*
+
+### Skills (`.claude/skills/`)
+
+| Skill | Trigger | Output |
+|-------|---------|--------|
+| PRD Writer (SaMD) | "write PRD", "product requirements" | Markdown PRD with regulatory sections |
+| Design Controls | "design controls", "traceability matrix", "IEC 62304" | XLSX traceability matrix |
+| Risk Management | "risk management", "ISO 14971", "FMEA" | XLSX risk analysis |
+| Change Impact | "change impact", "re-verification scope" | XLSX change impact report |
+| Design Review | "design review", "PDR", "CDR", "FDR" | XLSX + markdown narrative |
+| FHIR Builder | "FHIR resource", "FHIR bundle" | JSON FHIR R4 bundle |
+
+<details>
+<summary>Plus 8 general-purpose PM skills</summary>
+
+| Skill | Trigger | Output |
+|-------|---------|--------|
+| PRD Writer | "general PRD", "product spec", "feature requirements" | Markdown PRD |
+| Metrics Definition | "define metrics", "KPIs", "north star metric" | Markdown metrics framework |
+| Decision Doc | "decision doc", "RFC", "ADR" | Markdown decision record |
+| Status Update | "status update", "stakeholder update" | Markdown status report |
+| Research Synthesis | "synthesize research", "interview findings" | Markdown research summary |
+| Competitive Analysis | "competitive analysis", "market analysis" | Markdown competitive report |
+| Feature Prioritization | "prioritize features", "RICE scoring" | Markdown ranked backlog |
+| Roadmap Planning | "product roadmap", "quarterly plan" | Markdown roadmap |
+
+</details>
+
+## Example Artifacts
+
+The `examples/` folder contains pre-generated artifacts using a neonatal pulse oximeter as the reference device. The neonatal SpO2 device used throughout these examples is built and documented in [spo2-eval-pipeline](https://github.com/mc-barnes/spo2-eval-pipeline).
+
+| File | Skill | Contents |
+|------|-------|----------|
+| `design-controls-example.xlsx` | Design Controls | Full UN → DI → DO → V&V traceability matrix |
+| `risk-analysis-example.xlsx` | Risk Management | Hazard analysis (per ISO 14971:2019) plus separate process FMEA with RPN |
+| `fhir-bundle-example.json` | FHIR Builder | FHIR R4 bundle with Patient + Observation resources |
+| `samd-prd-example.md` | PRD Writer (SaMD) | Product requirements with regulatory sections |
+| `change-impact-example.xlsx` | Change Impact | Software change impact with re-verification scope |
+| `design-review-example.xlsx` | Design Review | CDR gate package with GO/NO-GO recommendation |
 
 ## Architecture
 
@@ -37,46 +112,68 @@ graph TD
 
 Every folder has a `CLAUDE.md` navigation map. Claude reads the root on every session and only loads deeper context when a query targets that domain — keeping context usage under 5% for most operations.
 
-## What's Included
+### Context Management
 
-### Skills (`.claude/skills/`)
+| Tier | What | When Loaded | Example |
+|------|------|-------------|---------|
+| **Tier 1** | Root `CLAUDE.md` | Every session | Doc index, team roster, device context |
+| **Tier 2** | Folder `CLAUDE.md` | When Claude navigates to that folder | `regulatory/CLAUDE.md` loaded on a risk question |
+| **Tier 3** | Templates and documents | On demand when referenced | `regulatory/risk-management/_TEMPLATE.md` |
 
-| Skill | Trigger | Output |
-|-------|---------|--------|
-| PRD Writer | "general PRD", "product spec", "feature requirements" | Markdown PRD |
-| Metrics Definition | "define metrics", "KPIs", "north star metric" | Markdown metrics framework |
-| Decision Doc | "decision doc", "RFC", "ADR" | Markdown decision record |
-| Status Update | "status update", "stakeholder update" | Markdown status report |
-| Research Synthesis | "synthesize research", "interview findings" | Markdown research summary |
-| Competitive Analysis | "competitive analysis", "market analysis" | Markdown competitive report |
-| Feature Prioritization | "prioritize features", "RICE scoring" | Markdown ranked backlog |
-| Roadmap Planning | "product roadmap", "quarterly plan" | Markdown roadmap |
-| PRD Writer (SaMD) | "write PRD", "product requirements" | Markdown PRD with regulatory sections |
-| Design Controls | "design controls", "traceability matrix", "IEC 62304" | XLSX traceability matrix |
-| Risk Management | "risk management", "ISO 14971", "FMEA" | XLSX risk analysis |
-| FHIR Builder | "FHIR resource", "FHIR bundle" | JSON FHIR R4 bundle |
-| Change Impact | "change impact", "re-verification scope" | XLSX change impact report |
-| Design Review | "design review", "PDR", "CDR", "FDR" | XLSX + markdown narrative |
+A query about customers loads `product/CLAUDE.md` and relevant customer files — it never touches `analytics/`, `engineering/`, or `regulatory/`. This keeps context usage minimal and responses focused.
 
-### Agent Personas (`.claude/skills/agents/`)
+## Getting Started
 
-Specialist reviewers that operate from a defined clinical or regulatory perspective. Each is a standalone `SKILL.md` — clone the folder, swap the domain knowledge, and you have a new reviewer for your vertical.
+**Try it now:** Clone the repo, open Claude Code, and say *"Run a risk analysis for a neonatal SpO2 threshold change."* The Risk Management skill generates a hazard analysis worksheet with hazard → sequence of events → harm columns, severity/probability scoring, and risk control traceability — ready to drop into your eQMS as a draft.
 
-| Agent | Domain | Standards & Guidance |
-|-------|--------|---------------------|
-| Regulatory Reviewer | FDA SaMD submissions (510(k), De Novo, PMA). Reviews PRDs, design controls, risk docs, CAPA, PMS reports, change requests, and SOPs. | IEC 62304, ISO 14971, ISO 13485, IEC 62366-1, IMDRF N41, FDA PCCP guidance, 21 CFR 820. Backed by 28 reference docs. |
-| QA Reviewer | ISO 13485 QMS compliance. Reviews CAPA records, complaint files, audit findings, nonconformances, supplier evaluations, management review inputs, and QMS procedures. | ISO 13485:2016, 21 CFR 820, ISO 19011:2018, 21 CFR 803. |
-| Safety Reviewer | Patient safety and human factors. Reviews risk analysis files, FMEA quality, use-related risk analysis, usability engineering files, foreseeable misuse, and AI/ML output safety. | ISO 14971:2019, IEC 62366-1:2015+A1:2020, FDA Human Factors guidance, AAMI TIR57. |
-| Cybersecurity Reviewer | Medical device cybersecurity. Reviews threat models, cybersecurity risk assessments, SBOMs, security architecture views, security controls, penetration test reports, vulnerability management plans, and Section 524B compliance. | FDA Premarket Cybersecurity Guidance (2026), FDA Postmarket Cybersecurity Guidance (2016), FD&C Act Section 524B, AAMI TIR57, IEC 81001-5-1, NIST CSF. Backed by 3 reference docs. |
-| Clinical Reviewer | RPM clinical reviewer with neonatal SpO2 domain expertise. Reviews clinical logic, alarm management, triage accuracy, and handoff quality. | Bonafide et al. (SpO2 accuracy), AAP consensus (cardiorespiratory monitoring), Owlet validation studies, NRP guidelines. |
+### 1. Fork this repo
 
-## Folder Structure
+```bash
+git clone https://github.com/mc-barnes/pm-os.git
+cd pm-os
+```
+
+### 2. Customize the root CLAUDE.md
+
+Open `CLAUDE.md` and replace the `[placeholders]` with your team's details:
+- Team roster (names, roles, Slack/GitHub handles)
+- Communication channels
+- Device context (classification, predicate, standards, clinical domain)
+
+### 3. Start using skills
+
+Skills are auto-discovered by Claude Code from `.claude/skills/`. Just say the trigger phrase:
+
+```
+> "Generate design controls for our cardiac monitor, safety class C"
+> "Write a PRD for the new alarm management feature"
+> "Run a risk analysis for the SpO2 threshold change"
+```
+
+### 4. Fill in templates
+
+Each content folder has `_TEMPLATE.md` files with YAML frontmatter pre-configured (`type`, `status: draft`, `owner`). Copy a template, rename it, and fill in the `[brackets]`:
+
+```bash
+cp product/prds/_TEMPLATE.md product/prds/alarm-management-v2.md
+```
+
+### 5. Check document status
+
+Run the status generator to see what's draft, in-review, approved, or stale:
+
+```bash
+./scripts/status.sh    # generates STATUS.md from frontmatter
+```
+
+<details>
+<summary>Folder Structure</summary>
 
 ```
 pm-os/
 ├── CLAUDE.md                    # Root nav — always loaded
 ├── README.md
-├── CONTRIBUTING.md              # Routing guide — where does this go?
+├── CONTRIBUTING.md
 ├── LICENSE
 │
 ├── .claude/skills/              # Claude Code auto-discovers these
@@ -119,74 +216,7 @@ pm-os/
     └── design-review-example.xlsx
 ```
 
-## Getting Started
-
-### 1. Fork this repo
-
-```bash
-git clone https://github.com/mc-barnes/pm-os.git
-cd pm-os
-```
-
-### 2. Customize the root CLAUDE.md
-
-Open `CLAUDE.md` and replace the `[placeholders]` with your team's details:
-- Team roster (names, roles, Slack/GitHub handles)
-- Communication channels
-- Device context (classification, predicate, standards, clinical domain)
-
-### 3. Start using skills
-
-Skills are auto-discovered by Claude Code from `.claude/skills/`. Just say the trigger phrase:
-
-```
-> "Generate design controls for our cardiac monitor, safety class C"
-> "Write a PRD for the new alarm management feature"
-> "Run a risk analysis for the SpO2 threshold change"
-```
-
-### 4. Fill in templates
-
-Each content folder has `_TEMPLATE.md` files with YAML frontmatter pre-configured (`type`, `status: draft`, `owner`). Copy a template, rename it, and fill in the `[brackets]`:
-
-```bash
-cp product/prds/_TEMPLATE.md product/prds/alarm-management-v2.md
-```
-
-### 5. Check document status
-
-Run the status generator to see what's draft, in-review, approved, or stale:
-
-```bash
-./scripts/status.sh    # generates STATUS.md from frontmatter
-```
-
-## Example Artifacts
-
-The `examples/` folder contains pre-generated artifacts using a neonatal pulse oximeter as the reference device:
-
-| File | Skill Used | Contents |
-|------|-----------|----------|
-| `design-controls-example.xlsx` | Design Controls | Full UN → DI → DO → V&V traceability matrix |
-| `risk-analysis-example.xlsx` | Risk Management | Hazard analysis + FMEA with RPN calculations |
-| `fhir-bundle-example.json` | FHIR Builder | FHIR R4 bundle with Patient + Observation resources |
-| `samd-prd-example.md` | PRD Writer (SaMD) | Product requirements with regulatory sections |
-| `change-impact-example.xlsx` | Change Impact | Software change impact with re-verification scope |
-| `design-review-example.xlsx` | Design Review | CDR gate package with GO/NO-GO recommendation |
-
-> **Regulatory note:** Skill-generated XLSX and JSON files are **uncontrolled drafts** — no audit trail, no electronic signatures, no Part 11 / Annex 11 compliance. Final approved records belong in your eQMS of record (e.g., Greenlight Guru, MasterControl, Qualio). Position these outputs as working drafts that feed your controlled document system.
-
-## Context Management
-
-SaMD Team OS uses tiered context loading to keep Claude Code efficient:
-
-| Tier | What | When Loaded | Example |
-|------|------|-------------|---------|
-| **Tier 1** | Root `CLAUDE.md` | Every session | Doc index, team roster, device context |
-| **Tier 2** | Folder `CLAUDE.md` | When Claude navigates to that folder | `regulatory/CLAUDE.md` loaded on a risk question |
-| **Tier 3** | Templates and documents | On demand when referenced | `regulatory/risk-management/_TEMPLATE.md` |
-
-A query about customers loads `product/CLAUDE.md` and relevant customer files — it never touches `analytics/`, `engineering/`, or `regulatory/`. This keeps context usage minimal and responses focused.
+</details>
 
 ## Built with Claude Code
 
