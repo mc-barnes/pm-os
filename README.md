@@ -70,6 +70,7 @@ Every folder has a `CLAUDE.md` navigation map. Claude reads the root on every se
 pm-os/
 ├── CLAUDE.md                    # Root nav — always loaded
 ├── README.md
+├── CONTRIBUTING.md              # Routing guide — where does this go?
 ├── LICENSE
 │
 ├── .claude/skills/              # Claude Code auto-discovers these
@@ -92,11 +93,11 @@ pm-os/
 │
 ├── product/                     # PRDs, strategy, competitive, customers
 ├── regulatory/                  # Design controls, risk, submissions, DHF
-├── clinical/                    # Intended use, usability engineering
+├── clinical/                    # Intended use, usability, clinical evaluation
 ├── analytics/                   # Post-market surveillance, product metrics
 ├── engineering/                 # Bugs, RFCs, IEC 62304 SDLC
 ├── quality/                     # CAPA, complaints, audit prep
-├── team/                        # Onboarding, retros
+├── team/                        # Onboarding, retros, decisions
 │
 └── examples/                    # Pre-generated artifacts
     ├── design-controls-example.xlsx
@@ -153,6 +154,8 @@ The `examples/` folder contains pre-generated artifacts using a neonatal pulse o
 | `samd-prd-example.md` | PRD Writer (SaMD) | Product requirements with regulatory sections |
 | `change-impact-example.xlsx` | Change Impact | Software change impact with re-verification scope |
 | `design-review-example.xlsx` | Design Review | CDR gate package with GO/NO-GO recommendation |
+
+> **Regulatory note:** Skill-generated XLSX and JSON files are **uncontrolled drafts** — no audit trail, no electronic signatures, no Part 11 / Annex 11 compliance. Final approved records belong in your eQMS of record (e.g., Greenlight Guru, MasterControl, Qualio). Position these outputs as working drafts that feed your controlled document system.
 
 ## Context Management
 

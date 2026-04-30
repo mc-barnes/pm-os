@@ -1,5 +1,6 @@
 ---
 name: prd-writer-samd
+version: 1.0.0
 description: >
   Generate a structured PRD for a software medical device with regulatory sections.
   Triggers: "write PRD", "product requirements", "SaMD PRD", "medical device PRD".

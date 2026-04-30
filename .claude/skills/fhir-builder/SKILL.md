@@ -1,5 +1,6 @@
 ---
 name: fhir-builder
+version: 1.0.0
 description: >
   Generate valid FHIR R4 JSON resources, bundles, and capability statements.
   Use when building FHIR resources (Patient, Observation, Device, DiagnosticReport),

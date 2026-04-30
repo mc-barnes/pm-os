@@ -1,5 +1,6 @@
 ---
 name: design-controls
+version: 1.0.0
 description: >
   Generate IEC 62304 / ISO 13485 design controls traceability matrices as XLSX.
   Use when building user needs, design inputs/outputs, verification/validation
@@ -63,6 +64,8 @@ The generated workbook contains 6 sheets with full forward/backward traceability
 | Type | Functional / Performance / Safety / Interface |
 | SW Safety Class | A / B / C per IEC 62304 |
 | Safety Class Rationale | Justification for the assigned safety class |
+| Risk Control ID | RC-xxx from risk-management XLSX (if this DI implements a risk control) |
+| Source HAZ ID | HAZ-xxx — the hazard this control mitigates (if applicable) |
 
 ### Sheet 3: Design_Outputs
 
@@ -139,7 +142,20 @@ Before shipping any design controls document:
 - [ ] Status fields use only allowed values (Pass/Fail/Pending)
 - [ ] IDs are sequential with no gaps or reuse
 - [ ] All formulas resolve (no #REF! or #N/A in traceability sheet)
+- [ ] Every risk control (RC-xxx) from the risk file has a corresponding DI with Type = Safety
+- [ ] Risk Control ID and Source HAZ ID columns are populated for safety DIs
 - [ ] File naming follows convention: `design-controls-{device-name}.xlsx`
+
+## Risk Control Traceability
+
+Per IEC 62304 Clause 7.1.3, risk control measures are design inputs. When generating design controls:
+
+1. **Ingest risk file**: If a risk-management XLSX exists, read the Risk_Controls sheet (RC-xxx → HAZ-xxx mapping)
+2. **Create DI entries**: Each risk control (RC-xxx) becomes a Design Input with Type = "Safety"
+3. **Link back**: The DI entry includes `Risk Control ID` and `Source HAZ ID` columns
+4. **Traceability matrix**: The Traceability_Matrix sheet includes RC-xxx → DI-xxx → DO-xxx → VER-xxx trace
+
+This ensures auditors can trace: HAZ-007 → RC-003 → DI-027 → DO-027 → VER-027.
 
 ## Implementation Notes
 

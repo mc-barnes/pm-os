@@ -1,5 +1,6 @@
 ---
 name: change-impact
+version: 1.0.0
 description: >
   Analyze software change impact for SaMD regulatory compliance. Generates
   XLSX change impact reports with traceability to design controls and risk

@@ -7,3 +7,9 @@
 
 ## Key context
 CAPA and complaint records are controlled documents — always include root cause analysis and effectiveness verification. Complaints that involve patient harm require MDR filing (see analytics/post-market/).
+
+## Not in this folder
+- Risk analysis (→ regulatory/risk-management/)
+- Design controls (→ regulatory/design-controls/)
+- Clinical evaluations (→ clinical/)
+- Product metrics or usage analytics (→ analytics/product-metrics/)

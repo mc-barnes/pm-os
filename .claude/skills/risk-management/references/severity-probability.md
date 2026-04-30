@@ -35,14 +35,16 @@ S2       AC    AC    A     A     U
 S1       AC    AC    AC    AC    A
 ```
 
-AC = Acceptable, A = ALARP (As Low As Reasonably Practicable), U = Unacceptable
+AC = Acceptable, A = AFAP (As Far As Possible per ISO 14971:2019), U = Unacceptable
 
-## ALARP Criteria
-Risk in ALARP zone is acceptable only if:
-1. Further risk reduction is impracticable, OR
-2. Cost of reduction grossly disproportionate to benefit gained
+## AFAP Criteria (ISO 14971:2019)
+Risk in the AFAP zone is acceptable only if:
+1. Risk has been reduced as far as possible without adversely affecting the benefit-risk ratio
+2. The residual risk is outweighed by the benefits of the intended use
 
-Document rationale for all ALARP decisions.
+Note: ISO 14971:2019 moved away from ALARP (which carries economic-cost connotations not permitted under EU MDR / EN ISO 14971:2019). Always use "as far as possible" or "benefit outweighs residual risk" framing.
+
+Document rationale for all AFAP decisions.
 
 ## FMEA Scales (for RPN calculation)
 - Severity (S): 1-10 (maps from S1-S5 above, doubled)
