@@ -4,11 +4,10 @@
 #
 # Requires bash 4+ (brew install bash on macOS).
 #
-# Template filtering: excludes files by filename pattern (*_TEMPLATE*) and by
-# directory path (*/_TEMPLATE/*). This means any file with "_TEMPLATE" in its
-# name or living inside a _TEMPLATE/ directory is treated as scaffolding, not
-# a real document. If you rename templates, update the -not -name/-path filters
-# in the find command below.
+# Filtering: parse_frontmatter() skips any file missing type or status in its
+# YAML frontmatter, so top-level docs (README, CLAUDE.md, etc.) are excluded
+# automatically. The find command only needs to exclude templates and dirs that
+# should never be scanned (e.g., .claude/, node_modules/).
 
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
@@ -62,9 +61,7 @@ while IFS= read -r f; do
 done < <(
   find . -name '*.md' -not -path './.claude/*' -not -path './references/*' \
     -not -path './output/*' -not -path './node_modules/*' \
-    -not -name '*_TEMPLATE*' -not -name 'CLAUDE.md' \
-    -not -name 'README.md' -not -name 'CONTRIBUTING.md' \
-    -not -name 'SPEC.md' -not -name 'STATUS.md' \
+    -not -name '*_TEMPLATE*' \
     -not -path '*/_TEMPLATE/*' \
   | sort
 )
