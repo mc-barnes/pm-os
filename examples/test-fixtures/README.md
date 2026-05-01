@@ -13,12 +13,15 @@ These are **deliberately broken** SaMD artifacts used to validate the 5 reviewer
 ```
 examples/test-fixtures/
 ├── README.md
-├── regulatory-reviewer/     # 4 fixtures
-├── clinical-reviewer/       # 4 fixtures
-├── safety-reviewer/         # 4 fixtures
-├── qa-reviewer/             # 4 fixtures
-├── cybersecurity-reviewer/  # 4 fixtures
-└── .results/                # gitignored eval output
+├── regulatory-reviewer/        # 4 fixtures
+├── clinical-reviewer/          # 4 fixtures
+├── safety-reviewer/            # 4 fixtures
+├── qa-reviewer/                # 4 fixtures
+├── cybersecurity-reviewer/     # 4 fixtures
+├── code-to-soup-register/      # 4 fixtures (directory-based)
+├── code-to-design-inputs/      # 4 fixtures (directory-based)
+├── code-to-hazard-candidates/  # 4 fixtures (directory-based)
+└── .results/                   # gitignored eval output
 ```
 
 ## Severity & Verdict Mapping
@@ -79,6 +82,45 @@ Each agent uses its own severity terminology. The eval script maps these interna
 | `sbom-no-versions.md` | SBOM | No versions, no transitive deps, not machine-readable | SECURITY CONCERN |
 | `security-arch-incomplete.md` | Security Arch | Missing 3 of 4 FDA views, no multi-patient harm assessment | SECURITY CONCERN |
 | `vuln-plan-no-cvd.md` | Vuln Mgmt Plan | No CVD, no timelines, no ISAO, NVD-only monitoring | SECURITY CONCERN |
+
+### code-to-soup-register
+
+Unlike the reviewer agent fixtures above, these are **directory-based fixtures** — each subdirectory contains realistic dependency manifests (not markdown documents) used to validate the `code-to-soup-register` skill.
+
+| Fixture | Manifest Files | Key Test | Expected Outcome |
+|---------|---------------|----------|-----------------|
+| `gpl-dependency/` | requirements.txt, Pipfile.lock | GPL license detection + transitive resolution | 9 SOUP entries, WARNING on pylint-django GPL-2.0 |
+| `missing-lock-file/` | package.json, requirements.txt (no lock files) | Missing lock file gap detection | 5 SOUP entries, GAP notes for both ecosystems |
+| `multi-language/` | requirements.txt, package-lock.json, go.mod | Multi-ecosystem detection (Python, JS, Go) | 8 SOUP entries across 3 languages |
+| `empty-repo/` | None (only main.py) | No-manifest error handling | 0 entries, exits with error |
+
+See `code-to-soup-register/README.md` for full details on running and scoring these fixtures.
+
+### code-to-design-inputs
+
+Directory-based fixtures containing source code used to validate the `code-to-design-inputs` skill's 6 heuristic scanners and PRD cross-reference.
+
+| Fixture | Source Files | Key Test | Expected Outcome |
+|---------|-------------|----------|-----------------|
+| `clear-api-boundaries/` | app.py (Flask routes), config.py (env vars) | API/config detection | ~8 DIs, Functional/Performance types |
+| `prd-mismatch/` | monitor.py (3 functions), prd.md (4 requirements) | Doc gap + impl gap detection | ~3 DIs, 1 doc gap, 1-2 impl gaps |
+| `clinical-thresholds/` | alarms.py (SpO2/HR thresholds), dosing.py (weight-based calc) | Clinical value detection | ~7 DIs, all Safety type |
+| `minimal-repo/` | main.py (hello world) | Graceful no-results handling | 0-1 DIs |
+
+See `code-to-design-inputs/README.md` for full details on running and scoring these fixtures.
+
+### code-to-hazard-candidates
+
+Directory-based fixtures containing source code used to validate the `code-to-hazard-candidates` skill's 6 heuristic scanners and risk file cross-reference.
+
+| Fixture | Source Files | Key Test | Expected Outcome |
+|---------|-------------|----------|-----------------|
+| `alarm-logic/` | alarm_manager.py (SpO2 state machine) | Alarm failure mode detection | 4-6 hazard candidates |
+| `existing-risk-file/` | vitals.py + risk-register.md | Cross-reference: matched + new + unmapped | 3 candidates |
+| `no-safety-critical/` | crud_app.py (pure CRUD) | Graceful "no candidates" | 0 candidates |
+| `non-default-domain/` | rhythm_classifier.py (cardiac ECG) | Domain mismatch warning | 2-4 candidates |
+
+See `code-to-hazard-candidates/README.md` for full details on running and scoring these fixtures.
 
 ## Running Evaluations
 

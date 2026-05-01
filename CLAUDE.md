@@ -74,6 +74,8 @@ Every markdown document should include YAML frontmatter:
 | call-notes | product/customers/*/calls/ | Customer call notes and meeting summaries |
 | data-schema | analytics/post-market/schemas/ | Data schema documentation for surveillance tables |
 | validation | docs/ | Agent evaluation results and validation summaries |
+| gap-report | regulatory/gap-analysis/ | Retrospective gap analysis reports — point-in-time compliance snapshots |
+| scope-statement | regulatory/gap-analysis/ | Gap analysis scope and authorization documents |
 
 ### Stale-doc handling
 When a document is replaced: set `status: superseded` in the old doc's frontmatter, add `supersedes:` in the new doc pointing to the old path. Claude ignores `status: superseded` docs unless explicitly asked.
@@ -82,6 +84,8 @@ When a document is replaced: set `status: superseded` in the old doc's frontmatt
 Kebab-case, version suffix, no spaces, no dates in filenames (use frontmatter for dates).
 Pattern: `{descriptor}-v{n}.md` or `{descriptor}-v{n}.xlsx`
 Example: `alarm-management-v2.md`, `risk-spo2-v3.xlsx`
+
+**Exception — gap analysis reports:** Gap reports use date-stamped names (`gap-report-{skill}-{date}.md`) because they are point-in-time snapshots, not versioned documents. There is no "v2" of a snapshot — progress is measured by generating new reports and comparing. The date comes from the `generated-on` frontmatter field.
 
 ### Cross-reference syntax
 When referencing IDs from other artifacts: `(see HAZ-007 in regulatory/risk-management/risk-spo2-v2.xlsx)` or `[HAZ-007](regulatory/risk-management/risk-spo2-v2.xlsx)`.

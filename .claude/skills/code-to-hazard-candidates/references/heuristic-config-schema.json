@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Hazard Candidate Heuristic Config",
+  "description": "Domain-specific heuristic overrides for code-to-hazard-candidates. Each scanner can be extended with additional patterns, replaced entirely, or disabled.",
+  "type": "object",
+  "required": ["domain", "scanners"],
+  "properties": {
+    "domain": {
+      "type": "string",
+      "description": "Clinical domain name (e.g., cardiac, respiratory, neonatal)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of this heuristic config"
+    },
+    "scanners": {
+      "type": "object",
+      "description": "Per-scanner configuration overrides",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["mode"],
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": ["extend", "replace", "disable"],
+            "description": "extend: add patterns to defaults. replace: use only these patterns. disable: skip this scanner."
+          },
+          "patterns": {
+            "type": "array",
+            "description": "Pattern entries (required for extend/replace, ignored for disable)",
+            "items": {
+              "type": "object",
+              "required": ["regex", "proposed_hazard", "proposed_failure_mode", "proposed_harm"],
+              "properties": {
+                "regex": {
+                  "type": "string",
+                  "description": "Python regex pattern (case-insensitive matching)"
+                },
+                "proposed_hazard": {
+                  "type": "string"
+                },
+                "proposed_failure_mode": {
+                  "type": "string"
+                },
+                "proposed_harm": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

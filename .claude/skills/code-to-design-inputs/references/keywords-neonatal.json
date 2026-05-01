@@ -1,0 +1,11 @@
+{
+  "domain": "neonatal",
+  "description": "Clinical keywords for neonatal monitoring — SpO2, vital signs, apgar scoring",
+  "keywords": [
+    "spo2", "sao2", "heart_rate", "hr", "bp", "blood_pressure",
+    "temperature", "temp", "dose", "dosing", "weight", "bmi",
+    "alarm", "alert", "critical", "apgar", "score", "severity",
+    "patient", "clinician", "clinical", "threshold", "vital",
+    "oxygen", "saturation", "respiratory", "pulse", "ecg", "ekg"
+  ]
+}

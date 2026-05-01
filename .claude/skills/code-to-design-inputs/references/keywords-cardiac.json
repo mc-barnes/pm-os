@@ -1,0 +1,19 @@
+{
+  "domain": "cardiac",
+  "description": "Clinical keywords for cardiac monitoring — ECG analysis, rhythm classification, interval measurements",
+  "keywords": [
+    "ecg", "ekg", "heart_rate", "hr", "bp", "blood_pressure",
+    "alarm", "alert", "critical", "severity",
+    "patient", "clinician", "clinical", "threshold", "vital", "pulse",
+    "qrs", "qrs_duration", "qrs_width", "qrs_complex",
+    "pr_interval", "pq_interval", "pr_duration",
+    "qt_interval", "qtc", "qt_corrected",
+    "st_segment", "st_elevation", "st_depression",
+    "afib", "atrial_fibrillation", "aflutter", "atrial_flutter",
+    "vtach", "ventricular_tachycardia", "vfib", "ventricular_fibrillation",
+    "asystole", "flatline",
+    "rhythm", "arrhythmia", "bradycardia", "tachycardia",
+    "r_peak", "rpeak", "r_wave", "beat", "sinus",
+    "pacemaker", "defibrillator", "cardioversion"
+  ]
+}

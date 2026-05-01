@@ -8,6 +8,7 @@ Design controls, risk management, submissions, DHF, and change control per IEC 6
 - submissions/       — 510(k), De Novo, or PMA submission packages and supporting documents.
 - design-history/    — Design History File (DHF) records and design review meeting minutes.
 - change-control/    — Change requests, impact assessments, and re-verification records.
+- gap-analysis/      — Retrospective gap analysis scope statements, gap reports, and templates. Point-in-time snapshots documenting compliance gaps identified from existing codebases. See `docs/gap-analysis-guide.md`.
 
 ## Key context
 All regulatory documents must reference the applicable standard. Use the design-controls, risk-management, change-impact, and design-review skills to generate XLSX artifacts. Templates here are for narrative documents that accompany those artifacts.

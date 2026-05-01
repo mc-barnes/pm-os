@@ -1,0 +1,75 @@
+{
+  "domain": "cardiac",
+  "description": "Cardiac monitoring heuristic overrides — ECG analysis, rhythm classification, interval measurements",
+  "scanners": {
+    "alarm_logic": {
+      "mode": "extend",
+      "patterns": [
+        {
+          "regex": "(?:afib|a_fib|atrial_fibrillation|aflutter|atrial_flutter)\\s*[=:(]",
+          "proposed_hazard": "Atrial fibrillation/flutter detection may fail",
+          "proposed_failure_mode": "Missed arrhythmia — AFib/AFlutter not detected",
+          "proposed_harm": "Delayed anticoagulation or cardioversion"
+        },
+        {
+          "regex": "(?:vtach|v_tach|ventricular_tachycardia|vfib|v_fib|ventricular_fibrillation)",
+          "proposed_hazard": "Ventricular arrhythmia classification may be incorrect",
+          "proposed_failure_mode": "Misclassified rhythm — VTach/VFib not detected or false positive",
+          "proposed_harm": "Delayed defibrillation or unnecessary intervention"
+        },
+        {
+          "regex": "(?:asystole|flatline|no_rhythm)\\s*[=:(]",
+          "proposed_hazard": "Asystole detection may fail",
+          "proposed_failure_mode": "Missed asystole — no-rhythm state not detected",
+          "proposed_harm": "Delayed resuscitation"
+        }
+      ]
+    },
+    "threshold_calculations": {
+      "mode": "extend",
+      "patterns": [
+        {
+          "regex": "(?:qrs|qrs_duration|qrs_width|qrs_complex)\\s*[<>=!]+\\s*\\d+",
+          "proposed_hazard": "QRS duration threshold may be incorrect",
+          "proposed_failure_mode": "Incorrect QRS width boundary — wide complex tachycardia missed",
+          "proposed_harm": "Misclassification of ventricular vs supraventricular rhythm"
+        },
+        {
+          "regex": "(?:pr_interval|pr_duration|pq_interval)\\s*[<>=!]+\\s*\\d+",
+          "proposed_hazard": "PR interval threshold may be incorrect",
+          "proposed_failure_mode": "Incorrect PR interval boundary — heart block not detected",
+          "proposed_harm": "Undetected conduction abnormality"
+        },
+        {
+          "regex": "(?:qt_interval|qtc|qt_corrected|qt_duration)\\s*[<>=!]+\\s*\\d+",
+          "proposed_hazard": "QT interval threshold may be incorrect",
+          "proposed_failure_mode": "Incorrect QT/QTc boundary — long QT not flagged",
+          "proposed_harm": "Undetected risk of torsades de pointes"
+        },
+        {
+          "regex": "(?:st_segment|st_elevation|st_depression)\\s*[<>=!]+",
+          "proposed_hazard": "ST segment analysis may be incorrect",
+          "proposed_failure_mode": "Missed ST elevation/depression — ischemia not detected",
+          "proposed_harm": "Delayed STEMI recognition and treatment"
+        }
+      ]
+    },
+    "decision_support": {
+      "mode": "extend",
+      "patterns": [
+        {
+          "regex": "def\\s+(?:classify_rhythm|detect_arrhythmia|analyze_ecg|interpret_ecg|classify_beat)",
+          "proposed_hazard": "Rhythm classification may produce incorrect output",
+          "proposed_failure_mode": "Incorrect rhythm classification — wrong arrhythmia type",
+          "proposed_harm": "Inappropriate clinical response to misidentified rhythm"
+        },
+        {
+          "regex": "(?:r_peak|r_wave|qrs_detect|peak_detect|rpeak)\\s*[=:(]",
+          "proposed_hazard": "R-peak detection may fail or produce false peaks",
+          "proposed_failure_mode": "Missed or phantom R-peaks — heart rate miscalculation",
+          "proposed_harm": "Incorrect heart rate leads to wrong clinical assessment"
+        }
+      ]
+    }
+  }
+}

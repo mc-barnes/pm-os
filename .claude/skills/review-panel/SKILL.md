@@ -75,6 +75,8 @@ Artifacts are routed by the `type:` field in YAML frontmatter. If no `type:` is 
 | `strategy` | regulatory, clinical |
 | `call-notes` | clinical |
 | `data-schema` | regulatory, cybersecurity |
+| `gap-report` | regulatory, qa, safety |
+| `scope-statement` | qa |
 | (unknown / missing) | all 5 |
 
 ### Agent Reference
@@ -221,6 +223,37 @@ Agents use different severity terms. The summary table normalizes to four levels
 | `design-review` | Run review-panel before a design review gate; feed findings into the review package |
 | `change-impact` | Run review-panel on the change request artifact before assessing re-verification scope |
 | `design-controls` | Review-panel validates traceability matrix completeness across regulatory + safety |
+
+## Retrospective Mode
+
+When invoked with `--retrospective-mode`, the review panel adjusts its behavior for gap-analysis artifacts.
+
+### Flag Propagation
+The `--retrospective-mode` flag propagates to every dispatched agent. Each agent's Retrospective Mode section (documented in its SKILL.md) defines how its evaluation changes.
+
+### Panel Header
+The panel summary header includes `**Mode: Retrospective**` when the flag is active. This makes the mode visible in the audit trail.
+
+### Invocation
+```bash
+/review-panel regulatory/gap-analysis/gap-report-soup-2026-04-30.md --retrospective-mode
+/review-panel regulatory/gap-analysis/gap-report-soup-2026-04-30.md --retrospective-mode --agents regulatory,qa,safety
+```
+
+### EVALUATION REFUSED Handling
+When `--retrospective-mode` is active, the qa-reviewer may return `EVALUATION REFUSED` instead of findings (see qa-reviewer SKILL.md Retrospective Mode section). The review panel handles this as follows:
+
+- `[EVALUATION REFUSED]` is displayed in the qa-reviewer section (distinct from `[AGENT FAILED]`)
+- Panel verdict maps to `INCOMPLETE` — same priority as agent failure
+- The refusal reason is included verbatim in the section output
+- Other agents' results are still included — the panel does not abort
+
+| Marker | Meaning | Panel Verdict |
+|--------|---------|--------------|
+| `[AGENT FAILED]` | Agent error or timeout | INCOMPLETE |
+| `[AGENT TIMED OUT]` | Agent exceeded time limit | INCOMPLETE |
+| `[EVALUATION REFUSED]` | Agent gate condition not met | INCOMPLETE |
+| `[UNEXPECTED FORMAT]` | Agent output malformed | INCOMPLETE |
 
 ## Verification Checklist
 
