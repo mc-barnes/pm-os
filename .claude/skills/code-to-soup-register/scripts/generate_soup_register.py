@@ -780,7 +780,10 @@ def main() -> None:
     build_soup_register(wb, deps)
     wb.active = 0
 
-    # Output paths
+    # TODO: Output dir resolution is duplicated in 3 scripts. Extract to a shared
+    # module if/when these scripts become a package.
+    # See also: code-to-design-inputs/scripts/generate_design_inputs.py
+    # See also: code-to-hazard-candidates/scripts/generate_hazard_candidates.py
     if args.output_dir:
         output_dir = Path(args.output_dir).resolve()
     else:

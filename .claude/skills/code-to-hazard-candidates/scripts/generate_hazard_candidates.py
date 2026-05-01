@@ -276,7 +276,9 @@ def scan_ehr_writes(content: str, filepath: str) -> list[HazardCandidate]:
          "Data written to clinical record may be incorrect",
          "Incorrect data written — wrong value or wrong patient",
          "Clinical decisions based on erroneous record data"),
-        (r'(?:Bundle|Observation|DiagnosticReport|MedicationRequest|Patient)\s*\(',
+        # Patient included deliberately — constructing patient resources is a hazard surface
+        # Order: Bundle|Patient|Observation|DiagnosticReport|MedicationRequest (canonical)
+        (r'(?:Bundle|Patient|Observation|DiagnosticReport|MedicationRequest)\s*\(',
          "Data written to clinical record may be incorrect",
          "Incorrect data written — FHIR resource constructed with wrong data",
          "Clinical decisions based on erroneous record data"),
@@ -448,6 +450,24 @@ def load_heuristic_config(
     domain = data.get("domain", "custom")
     scanner_configs = data.get("scanners", {})
 
+    # Validate scanner config structure
+    valid_modes = {"extend", "replace", "disable"}
+    required_pattern_keys = {"regex", "proposed_hazard", "proposed_failure_mode", "proposed_harm"}
+    for scanner_name, cfg in scanner_configs.items():
+        mode = cfg.get("mode", "extend")
+        if mode not in valid_modes:
+            raise ValueError(
+                f"Scanner '{scanner_name}': invalid mode '{mode}'. "
+                f"Must be one of: {', '.join(sorted(valid_modes))}"
+            )
+        for i, pattern in enumerate(cfg.get("patterns", [])):
+            missing = required_pattern_keys - set(pattern.keys())
+            if missing:
+                raise ValueError(
+                    f"Scanner '{scanner_name}', pattern {i}: missing required "
+                    f"keys: {', '.join(sorted(missing))}"
+                )
+
     scanners: list[Any] = []
     for name, default_fn in _SCANNER_NAME_MAP.items():
         if name not in scanner_configs:
@@ -493,7 +513,7 @@ def walk_source_tree(
 
     Returns (hazard_candidates, files_analyzed, files_excluded).
     """
-    active_scanners = scanners or ALL_SCANNERS
+    active_scanners = ALL_SCANNERS if scanners is None else scanners
     all_hcs: list[HazardCandidate] = []
     files_analyzed: list[str] = []
     files_excluded: list[str] = []
@@ -988,7 +1008,7 @@ def main() -> None:
                 scanners, domain_name = load_heuristic_config(heuristics_path)
                 print(f"Loaded heuristic config: domain={domain_name}, "
                       f"scanners={len(scanners)}")
-            except (json.JSONDecodeError, KeyError) as e:
+            except (json.JSONDecodeError, KeyError, ValueError) as e:
                 print(f"Error loading heuristics config: {e}", file=sys.stderr)
                 sys.exit(1)
         else:
@@ -1040,7 +1060,10 @@ def main() -> None:
     build_hazard_candidates_sheet(wb, hcs)
     wb.active = 0
 
-    # Output paths
+    # TODO: Output dir resolution is duplicated in 3 scripts. Extract to a shared
+    # module if/when these scripts become a package.
+    # See also: code-to-design-inputs/scripts/generate_design_inputs.py
+    # See also: code-to-soup-register/scripts/generate_soup_register.py
     if args.output_dir:
         output_dir = Path(args.output_dir).resolve()
     else:

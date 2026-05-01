@@ -114,29 +114,30 @@ _DEFAULT_CLINICAL_KEYWORDS = {
     "oxygen", "saturation", "respiratory", "pulse", "ecg", "ekg",
 }
 
-# Module-level mutable reference — replaced by load_domain_keywords()
-CLINICAL_KEYWORDS: set[str] = set(_DEFAULT_CLINICAL_KEYWORDS)
 
+def load_domain_keywords(config_path: Path) -> tuple[set[str], str]:
+    """Load domain keywords from JSON config.
 
-def load_domain_keywords(config_path: Path) -> str:
-    """Load domain keywords from JSON config, replacing CLINICAL_KEYWORDS.
-
-    Returns the domain name from the config.
+    Returns (keyword_set, domain_name).
+    Raises ValueError if the config structure is invalid.
     """
-    global CLINICAL_KEYWORDS
     with open(config_path) as f:
         config = json.load(f)
-    CLINICAL_KEYWORDS = set(config["keywords"])
-    return config.get("domain", "custom")
+    if "keywords" not in config:
+        raise ValueError("Domain keywords config missing required key: 'keywords'")
+    kw_list = config["keywords"]
+    if not isinstance(kw_list, list) or not all(isinstance(k, str) for k in kw_list):
+        raise ValueError("'keywords' must be a list of strings")
+    return set(kw_list), config.get("domain", "custom")
 
 
-def _has_clinical_context(line: str) -> bool:
+def _has_clinical_context(line: str, keywords: set[str] = _DEFAULT_CLINICAL_KEYWORDS) -> bool:
     """Check if a line contains clinical terminology."""
     lower = line.lower()
-    return any(kw in lower for kw in CLINICAL_KEYWORDS)
+    return any(kw in lower for kw in keywords)
 
 
-def scan_api_boundaries(content: str, filepath: str) -> list[DesignInput]:
+def scan_api_boundaries(content: str, filepath: str, keywords: set[str] = _DEFAULT_CLINICAL_KEYWORDS) -> list[DesignInput]:
     """Detect routes, exported functions, public interfaces."""
     results: list[DesignInput] = []
     patterns = [
@@ -158,7 +159,7 @@ def scan_api_boundaries(content: str, filepath: str) -> list[DesignInput]:
         for pattern, desc_fn in patterns:
             match = re.search(pattern, line)
             if match:
-                di_type = "Interface" if _has_clinical_context(line) else "Functional"
+                di_type = "Interface" if _has_clinical_context(line, keywords) else "Functional"
                 results.append(DesignInput(
                     di_id="",
                     description=desc_fn(match),
@@ -170,7 +171,7 @@ def scan_api_boundaries(content: str, filepath: str) -> list[DesignInput]:
     return results
 
 
-def scan_configuration_surfaces(content: str, filepath: str) -> list[DesignInput]:
+def scan_configuration_surfaces(content: str, filepath: str, keywords: set[str] = _DEFAULT_CLINICAL_KEYWORDS) -> list[DesignInput]:
     """Detect environment variables, feature flags, threshold constants."""
     results: list[DesignInput] = []
     patterns = [
@@ -190,7 +191,7 @@ def scan_configuration_surfaces(content: str, filepath: str) -> list[DesignInput
         for pattern, desc_fn in patterns:
             match = re.search(pattern, stripped)
             if match:
-                if _has_clinical_context(stripped):
+                if _has_clinical_context(stripped, keywords):
                     di_type = "Safety"
                 elif any(kw in match.group(1).lower() for kw in ("timeout", "rate", "latency", "max", "min", "limit")):
                     di_type = "Performance"
@@ -221,6 +222,8 @@ def scan_integration_points(content: str, filepath: str) -> list[DesignInput]:
         (r'(?:from|import)\s+(?:fhir|hl7)|(?:fhir|hl7)[\._]\w+',
          lambda m: f"System shall interface with FHIR/HL7 module"),
         # FHIR resource instantiation (requires constructor call)
+        # Patient included deliberately — writing patient demographics is a design input
+        # Order: Bundle|Patient|Observation|DiagnosticReport|MedicationRequest (canonical)
         (r'(?:Bundle|Patient|Observation|DiagnosticReport|MedicationRequest)\s*\(',
          lambda m: f"System shall interface with FHIR/HL7 resource"),
         # Database write operations (require db/model/session/cursor/collection context)
@@ -310,7 +313,7 @@ def scan_data_retention(content: str, filepath: str) -> list[DesignInput]:
     return results
 
 
-def scan_error_messages(content: str, filepath: str) -> list[DesignInput]:
+def scan_error_messages(content: str, filepath: str, keywords: set[str] = _DEFAULT_CLINICAL_KEYWORDS) -> list[DesignInput]:
     """Detect user-facing error messages — information-for-safety under risk controls."""
     results: list[DesignInput] = []
     patterns = [
@@ -329,7 +332,7 @@ def scan_error_messages(content: str, filepath: str) -> list[DesignInput]:
         for pattern, desc_fn in patterns:
             match = re.search(pattern, line)
             if match:
-                di_type = "Safety" if _has_clinical_context(line) else "Functional"
+                di_type = "Safety" if _has_clinical_context(line, keywords) else "Functional"
                 results.append(DesignInput(
                     di_id="",
                     description=desc_fn(match),
@@ -354,11 +357,16 @@ ALL_SCANNERS = [
 ]
 
 
-def walk_source_tree(source: Path, scope: str | None = None) -> tuple[list[DesignInput], list[str]]:
+def walk_source_tree(
+    source: Path,
+    scope: str | None = None,
+    keywords: set[str] | None = None,
+) -> tuple[list[DesignInput], list[str]]:
     """Walk source tree and run all scanners on each file.
 
     Returns (design_inputs, files_analyzed).
     """
+    kw = keywords if keywords is not None else _DEFAULT_CLINICAL_KEYWORDS
     all_dis: list[DesignInput] = []
     files_analyzed: list[str] = []
 
@@ -381,7 +389,11 @@ def walk_source_tree(source: Path, scope: str | None = None) -> tuple[list[Desig
                 continue
 
             for scanner in ALL_SCANNERS:
-                results = scanner(content, rel_path)
+                # Scanners that accept keywords get them; others don't
+                try:
+                    results = scanner(content, rel_path, keywords=kw)
+                except TypeError:
+                    results = scanner(content, rel_path)
                 all_dis.extend(results)
 
     return all_dis, files_analyzed
@@ -1006,14 +1018,15 @@ def main() -> None:
     args = parser.parse_args()
 
     # Load domain keywords if provided
+    loaded_keywords: set[str] | None = None
     if args.domain_keywords:
         kw_path = Path(args.domain_keywords)
         if kw_path.is_file():
             try:
-                domain = load_domain_keywords(kw_path)
+                loaded_keywords, domain = load_domain_keywords(kw_path)
                 print(f"Loaded domain keywords: domain={domain}, "
-                      f"keywords={len(CLINICAL_KEYWORDS)}")
-            except (json.JSONDecodeError, KeyError) as e:
+                      f"keywords={len(loaded_keywords)}")
+            except (json.JSONDecodeError, KeyError, ValueError) as e:
                 print(f"Error loading domain keywords: {e}", file=sys.stderr)
                 sys.exit(1)
         else:
@@ -1030,7 +1043,7 @@ def main() -> None:
             print(f"Error: {args.source} is not a directory.", file=sys.stderr)
             sys.exit(1)
         source_name = source.name
-        dis, files_analyzed = walk_source_tree(source, args.scope)
+        dis, files_analyzed = walk_source_tree(source, args.scope, keywords=loaded_keywords)
         if not dis:
             print(f"No design inputs detected in {args.source}.")
             print("This may indicate a codebase with no detectable API boundaries,")
@@ -1071,7 +1084,10 @@ def main() -> None:
     build_design_inputs_sheet(wb, dis, include_priority=include_priority)
     wb.active = 0
 
-    # Output paths
+    # TODO: Output dir resolution is duplicated in 3 scripts. Extract to a shared
+    # module if/when these scripts become a package.
+    # See also: code-to-hazard-candidates/scripts/generate_hazard_candidates.py
+    # See also: code-to-soup-register/scripts/generate_soup_register.py
     if args.output_dir:
         output_dir = Path(args.output_dir).resolve()
     else:
