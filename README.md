@@ -1,8 +1,10 @@
 # SaMD Team OS
 
-For teams shipping regulated software without a 30-person QMS organization. Five reviewer agents catch findings before auditors do. Three reverse-engineering skills reconstruct draft regulatory artifacts from codebases that shipped before documentation caught up. Standards editions pinned (IEC 62304:2006+A1:2015, ISO 14971:2019, IEC 81001-5-1:2021). Outputs are explicit drafts — your eQMS remains the system of record.
+For SaMD teams managing change control on shipped product without a 30-person QMS organization. Reviewer agents catch findings before auditors do. Three reverse-engineering skills reconstruct draft regulatory artifacts from codebases that shipped before documentation caught up. Standards editions pinned (IEC 62304:2006+A1:2015, ISO 14971:2019, IEC 81001-5-1:2021). Outputs are explicit drafts — your eQMS remains the system of record.
 
 *Ship regulated software at startup speed — whether you're building docs alongside code or catching up after launch.*
+
+*Authoring in minutes, not days. Review goes to substance, not cleanup.*
 
 ## Scope and Limitations
 
@@ -14,7 +16,7 @@ Skills generate artifacts; agents review them.
 
 ### Reviewer Agents (`.claude/skills/agents/`)
 
-Five specialist reviewers that operate from a defined regulatory or clinical perspective. Each is a standalone `SKILL.md` — clone the folder, swap the domain knowledge, and you have a new reviewer for your vertical.
+Reviewer agents that each operate from a defined regulatory or clinical perspective. Each is a standalone `SKILL.md` — clone the folder, swap the domain knowledge, and you have a new reviewer for your vertical.
 
 | Agent | Reviews | Standards | Verdicts |
 |-------|---------|-----------|----------|
@@ -124,7 +126,7 @@ graph TD
     TEAM --> T_NAV["CLAUDE.md<br/><i>Onboarding, retros</i>"]
 
     SKILLS --> S1["17 skills"]
-    SKILLS --> S2["5 agent personas"]
+    SKILLS --> S2["Agent personas"]
 
     style ROOT fill:#1F4E79,color:#fff
     style SKILLS fill:#2E7D32,color:#fff
@@ -157,7 +159,7 @@ Agent reviews use the Claude API. Costs depend on artifact length and number of 
 | Operation | Estimated Cost |
 |-----------|---------------|
 | Single agent review | $0.05 – $0.15 |
-| Full review panel (5 agents) | $0.25 – $0.75 |
+| Full review panel (all agents) | $0.25 – $0.75 |
 | Eval run (20 fixtures) | ~$2.00 |
 | Weekly team usage (5 artifacts, panel review) | $5 – $15/month |
 
