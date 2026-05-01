@@ -12,7 +12,7 @@ related:
 
 ## What the Agents Are
 
-SaMD Team OS includes five AI reviewer agents that pre-screen regulated artifacts against standards requirements. Each agent operates from a defined regulatory or clinical persona and produces structured findings with standards citations.
+SaMD Team OS includes AI reviewer agents that pre-screen regulated artifacts against standards requirements. Each agent operates from a defined regulatory or clinical persona and produces structured findings with standards citations.
 
 **They are a draft-layer review tool.** Agents read an artifact, compare it against internalized standards knowledge, and produce findings. Findings are uncontrolled output — not regulatory sign-off, not audit evidence, not a substitute for qualified human review.
 

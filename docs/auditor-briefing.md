@@ -13,7 +13,7 @@ One-page summary for QA leads preparing for audits, or for auditors asking about
 
 ## What It Is
 
-SaMD Team OS includes five AI reviewer agents that pre-screen draft regulatory artifacts (PRDs, risk analyses, CAPA records, threat models, etc.) before human expert review. The agents identify structural gaps, missing standards citations, and common deficiencies — similar to a checklist, but able to read and interpret document content.
+SaMD Team OS includes AI reviewer agents that pre-screen draft regulatory artifacts (PRDs, risk analyses, CAPA records, threat models, etc.) before human expert review. The agents identify structural gaps, missing standards citations, and common deficiencies — similar to a checklist, but able to read and interpret document content.
 
 ## What It Is Not
 
