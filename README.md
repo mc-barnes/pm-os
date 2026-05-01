@@ -1,14 +1,14 @@
 # SaMD Team OS
 
-For SaMD teams managing change control on shipped product without a 30-person QMS organization. Reviewer agents catch findings before auditors do. Three reverse-engineering skills reconstruct draft regulatory artifacts from codebases that shipped before documentation caught up. Standards editions pinned (IEC 62304:2006+A1:2015, ISO 14971:2019, IEC 81001-5-1:2021). Outputs are explicit drafts — your eQMS remains the system of record.
+For teams managing software medical device on market in the US. Reviewer agents provide comprehensive design history file feedback on your document drafts, so you can author them for reviewers in minutes and not days. Your reviewers focus on substance and not cleanup.
+
+Three reverse-engineering skills reconstruct draft regulatory artifacts from codebases that shipped before documentation caught up. Standards editions pinned (IEC 62304:2006+A1:2015, ISO 14971:2019, IEC 81001-5-1:2021). Outputs are explicit drafts — your eQMS remains the system of record.
 
 *Ship regulated software at startup speed — whether you're building docs alongside code or catching up after launch.*
 
-*Authoring in minutes, not days. Review goes to substance, not cleanup.*
-
 ## Scope and Limitations
 
-Skill-generated XLSX, JSON, and Markdown files are **uncontrolled drafts** — no audit trail, no electronic signatures, no Part 11 / Annex 11 compliance. Final approved records belong in your eQMS of record (e.g., Greenlight Guru, MasterControl, Qualio). This repo is a **working environment**, not a quality system.
+Skill-generated XLSX, JSON, and Markdown files are **uncontrolled drafts** — no electronic signatures, no Part 11 / Annex 11 compliance. Final approved records belong in your eQMS of record. This repo is a **working environment**, not a quality system.
 
 ## What's Included
 
